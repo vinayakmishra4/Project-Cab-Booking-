@@ -1,0 +1,428 @@
+
+/* ---------- Global Styles ---------- */
+
+:root {
+    --red: #e50914;
+    --red-dark: #bd0710;
+    --black: #111111;
+    --dark: #1b1b1b;
+    --white: #ffffff;
+    --background: #f5f5f7;
+    --gray: #777777;
+    --border: #e4e4e7;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--black);
+    line-height: 1.6;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+/* ---------- Navigation ---------- */
+
+.navbar {
+    min-height: 76px;
+    background: var(--black);
+    color: var(--white);
+    padding: 15px 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: var(--red);
+}
+
+.navbar nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.navbar nav a {
+    color: #dddddd;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.navbar nav a:hover {
+    color: var(--red);
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--red);
+    font-weight: bold;
+}
+
+/* ---------- Main Container ---------- */
+
+.container {
+    width: min(100% - 32px, 1050px);
+    margin: 35px auto;
+}
+
+/* ---------- Welcome Banner ---------- */
+
+.welcome {
+    background: var(--black);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 35px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+    margin-bottom: 28px;
+    border-left: 5px solid var(--red);
+}
+
+.eyebrow {
+    color: #ff6970;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.welcome h1 {
+    font-size: clamp(30px, 5vw, 42px);
+    line-height: 1.2;
+    margin-bottom: 12px;
+}
+
+.welcome h1 span {
+    color: var(--red);
+}
+
+.subtitle {
+    color: #cccccc;
+    font-size: 14px;
+}
+
+.car-icon {
+    font-size: 70px;
+    padding-left: 20px;
+}
+
+/* ---------- Booking Card ---------- */
+
+.booking-card {
+    background: var(--white);
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+}
+
+.section-heading {
+    margin-bottom: 22px;
+}
+
+.section-heading h2 {
+    font-size: 21px;
+    margin-bottom: 4px;
+}
+
+.section-heading p {
+    font-size: 13px;
+    color: var(--gray);
+}
+
+.divider {
+    height: 1px;
+    background: var(--border);
+    margin: 30px 0;
+}
+
+/* ---------- Form Layout ---------- */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+    min-width: 0;
+}
+
+.form-grid .form-group {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--black);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input,
+select {
+    min-height: 46px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #999999;
+    font-size: 13px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.08);
+}
+
+.full-width {
+    width: 100%;
+}
+
+/* ---------- Duty Selection ---------- */
+
+.duty-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.duty-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 17px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.duty-option:has(input:checked) {
+    border-color: var(--red);
+    background: #fff5f5;
+}
+
+.duty-option input {
+    width: 17px;
+    min-height: auto;
+    height: 17px;
+    accent-color: var(--red);
+    flex-shrink: 0;
+}
+
+.duty-option span {
+    display: flex;
+    flex-direction: column;
+}
+
+.duty-option strong {
+    font-size: 14px;
+}
+
+.duty-option small {
+    color: var(--gray);
+    font-size: 12px;
+}
+
+/* ---------- Submit Section ---------- */
+
+.booking-footer {
+    border-top: 1px solid var(--border);
+    margin-top: 28px;
+    padding-top: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.booking-footer p {
+    font-size: 13px;
+    color: var(--gray);
+}
+
+.status-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    background: #22a447;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.book-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 13px 23px;
+    background: var(--red);
+    color: var(--white);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.book-btn span {
+    margin-left: 12px;
+}
+
+.book-btn:hover {
+    background: var(--red-dark);
+    transform: translateY(-1px);
+}
+
+.form-message {
+    margin-top: 18px;
+    font-size: 13px;
+}
+
+.success {
+    color: #16803b;
+}
+
+/* ---------- Footer ---------- */
+
+footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 25px 0;
+    color: var(--gray);
+    font-size: 12px;
+}
+
+/* ---------- Responsive Design ---------- */
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 15px 5%;
+        flex-wrap: wrap;
+    }
+
+    .navbar nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .container {
+        margin-top: 22px;
+    }
+
+    .welcome {
+        padding: 28px 24px;
+    }
+
+    .car-icon {
+        font-size: 48px;
+    }
+
+    .booking-card {
+        padding: 25px 20px;
+    }
+}
+
+@media (max-width: 520px) {
+    .form-grid,
+    .duty-options {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome {
+        padding: 25px 20px;
+    }
+
+    .welcome h1 {
+        font-size: 30px;
+    }
+
+    .subtitle {
+        max-width: 250px;
+    }
+
+    .car-icon {
+        font-size: 35px;
+        padding-left: 8px;
+    }
+
+    .booking-footer,
+    footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .book-btn {
+        width: 100%;
+    }
+
+    footer {
+        text-align: center;
+        align-items: center;
+    }
+
+    .profile span {
+        display: none;
+    }
+}
