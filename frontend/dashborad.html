@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CABGO | Booking Dashboard</title>
+    <!-- External CSS -->
+    <link rel="stylesheet" href="script.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <header class="navbar">
+        <a href="/index.html" class="logo">
+            CAB<span>GO</span>
+        </a>
+        <nav class="nav-links">
+            <a href="index.html">Book a Car</a>
+            <a href="dashboard.html" class="active">My Bookings</a>
+        </nav>
+        <div class="profile">
+            <div class="avatar">E</div>
+            <div class="profile-info">
+                <strong>Employee</strong>
+                <small>Employee Portal</small>
+            </div>
+        </div>
+    </header>
+    <main class="container">
+        <!-- Dashboard Heading -->
+        <section class="page-header">
+            <div>
+                <p class="eyebrow">EMPLOYEE TRANSPORT PORTAL</p>
+                <h1>Booking <span>Dashboard</span></h1>
+                <p class="subtitle">
+                    View and manage all your car bookings in one place.
+                </p>
+            </div>
+            <a href="index.html" class="primary-btn">
+                + Book a Car
+            </a>
+        </section>
+        <!-- Summary Cards -->
+        <section class="stats-grid">
+            <article class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Total Bookings</span>
+                    <span class="stat-icon">▤</span>
+                </div>
+                <h2 id="totalCount">0</h2>
+                <p>All your bookings</p>
+            </article>
+            <article class="stat-card planned">
+                <div class="stat-top">
+                    <span class="stat-label">Planned</span>
+                    <span class="stat-icon">◷</span>
+                </div>
+                <h2 id="plannedCount">0</h2>
+                <p>Upcoming trips</p>
+            </article>
+            <article class="stat-card completed">
+                <div class="stat-top">
+                    <span class="stat-label">Completed</span>
+                    <span class="stat-icon">✓</span>
+                </div>
+                <h2 id="completedCount">0</h2>
+                <p>Successfully completed</p>
+            </article>
+            <article class="stat-card cancelled">
+                <div class="stat-top">
+                    <span class="stat-label">Cancelled</span>
+                    <span class="stat-icon">×</span>
+                </div>
+                <h2 id="cancelledCount">0</h2>
+                <p>Cancelled bookings</p>
+            </article>
+        </section>
+        <!-- Booking Dashboard -->
+        <section class="bookings-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>All Bookings</h2>
+                    <p>Search, filter, and view your car bookings.</p>
+                </div>
+                <button
+                    type="button"
+                    class="refresh-btn"
+                    id="refreshBtn">
+                    ↻ Refresh
+                </button>
+            </div>
+            <!-- Search and Filters -->
+            <div class="filters">
+                <div class="search-box">
+                    <span>⌕</span>
+                    <input
+                        type="search"
+                        id="searchInput"
+                        placeholder="Search booking ID or destination..."
+                        aria-label="Search bookings">
+                </div>
+                <select id="statusFilter" aria-label="Filter by status">
+                    <option value="All">All Statuses</option>
+                    <option value="Planned">Planned</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+                <select id="dutyFilter" aria-label="Filter by duty type">
+                    <option value="All">All Duty Types</option>
+                    <option value="Office">Office</option>
+                    <option value="On Duty">On Duty</option>
+                </select>
+            </div>
+            <!-- Bookings Table -->
+            <div class="table-wrapper" id="tableWrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>BOOKING ID</th>
+                            <th>TRIP DETAILS</th>
+                            <th>DUTY TYPE</th>
+                            <th>DATE &amp; TIME</th>
+                            <th>STATUS</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingTableBody">
+                        <!-- Booking data added by dashboard.js -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" hidden>
+                <div class="empty-icon">🚘</div>
+                <h3>No bookings found</h3>
+                <p>
+                    Try another search or change your filters.
+                </p>
+                <a href="index.html" class="primary-btn">
+                    Book a Car
+                </a>
+            </div>
+            <!-- Table Footer -->
+            <div class="table-footer">
+                <p id="resultsInfo">Showing 0 bookings</p>
+                <button
+                    class="clear-btn"
+                    id="clearFiltersBtn"
+                    type="button">
+                    Clear Filters
+                </button>
+            </div>
+        </section>
+        <footer>
+            <p>© 2026 CABGO Employee Transport Portal</p>
+            <p>Safe journeys. Smarter travel.</p>
+        </footer>
+    </main>
+    <!-- Booking Details Modal -->
+    <div class="modal" id="bookingModal" hidden>
+        <div
+            class="modal-content"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modalTitle">
+            <div class="modal-header">
+                <div>
+                    <p class="eyebrow">BOOKING INFORMATION</p>
+                    <h2 id="modalTitle">Booking Details</h2>
+                </div>
+                <button
+                    class="close-modal"
+                    id="closeModalBtn"
+                    type="button"
+                    aria-label="Close">
+                    ×
+                </button>
+            </div>
+            <div class="details-grid" id="bookingDetails"></div>
+            <div class="modal-actions">
+                <button
+                    class="cancel-booking-btn"
+                    id="cancelBookingBtn"
+                    type="button"
+                    hidden>
+                    Cancel Booking
+                </button>
+                <button
+                    class="close-btn"
+                    id="closeDetailsBtn"
+                    type="button">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- External JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
