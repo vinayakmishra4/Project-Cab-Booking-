@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motherson | Employee Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <main class="login-page">
+        <!-- Left Branding Section -->
+        <section class="brand-section">
+            <div class="brand-content">
+                <div class="brand-logo">
+                    <div class="logo-icon">M</div>
+                </div>
+
+                <div class="brand-message">
+                    <span class="eyebrow">EMPLOYEE PORTAL</span>
+                    <h1>Driving<br>Excellence.<br><span>Connecting People.</span></h1>
+                    <p>
+                        Welcome to the Motherson employee portal.
+                        Sign in to access your workplace resources,
+                        updates, and employee services.
+                    </p>
+                </div>
+
+                <div class="brand-footer">
+                    <span class="status-dot"></span>
+                    Together, we move forward.
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Login Section -->
+        <section class="form-section">
+            <div class="login-card">
+                <div class="mobile-brand">
+                    <div class="logo-icon">M</div>
+                    <span>MOTHERSON</span>
+                </div>
+
+                <div class="welcome">
+                    <span class="welcome-label">EMPLOYEE ACCESS</span>
+                    <h2>Welcome back</h2>
+                    <p>Please enter your credentials to sign in.</p>
+                </div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="employeeId">Employee ID</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">▤</span>
+                            <input
+                                type="text"
+                                id="employeeId"
+                                name="employeeId"
+                                placeholder="Enter your employee ID"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">▣</span>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+                            <button
+                                type="button"
+                                class="toggle-password"
+                                id="togglePassword"
+                                aria-label="Show password"
+                            >Show</button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="remember-label">
+                            <input type="checkbox" id="rememberMe">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="#" id="forgotPassword">Forgot password?</a>
+                    </div>
+
+                    <div class="message" id="message" role="status"
+                         aria-live="polite"></div>
+
+                    <button type="submit" class="login-button" id="loginButton">
+                        Sign In <span>→</span>
+                    </button>
+                </form>
+
+                <div class="security-note">
+                    <span class="lock-icon">▣</span>
+                    Secure access for authorized employees only
+                </div>
+
+                <div class="divider"></div>
+
+                <footer class="login-footer">
+                    <span>© 2026 Motherson</span>
+                    <span>Employee Portal</span>
+                </footer>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

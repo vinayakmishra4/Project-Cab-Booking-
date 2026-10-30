@@ -71,22 +71,19 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("login").scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
+  
+/* Redirect users to their selected account login page */
 
-// Redirect users to their selected account login page
-document.querySelectorAll("[data-role]").forEach((element) => {
-  element.addEventListener("click", (event) => {
-    const role = element.dataset.role;
+document.querySelectorAll('[data-role]').forEach((element) => {
+    element.addEventListener('click', () => {
+        const role = element.dataset.role;
 
-    if (!roles[role]) return;
-
-    if (role === "employer") {
-      window.location.href = "employer-login.html";
-    } else if (role === "driver") {
-      window.location.href = "driver-login.html";
-    } else if (role === "admin") {
-      window.location.href = "admin-login.html";
-    }
-  });
+        if (role === 'employer') {
+            window.location.href = '/frontend/employeerloginpage/index.html';
+        } else if (role === 'driver') {
+            window.location.href = 'driver-login.html';
+        }
+    });
 });
 
 
