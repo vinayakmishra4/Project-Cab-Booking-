@@ -362,6 +362,24 @@ body {
     transform: none;
 }
 
+/* Create-account link */
+.create-account {
+    margin: 18px 0 0;
+    text-align: center;
+    color: #666;
+    font-size: 13px;
+}
+
+.create-account a {
+    color: #d71920;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.create-account a:hover {
+    text-decoration: underline;
+}
+
 /* Validation messages */
 
 .message {
