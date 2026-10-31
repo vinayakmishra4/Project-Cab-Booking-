@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Motherson | Employee Login</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/frontend/employeerloginpage/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -52,14 +52,14 @@
 
                 <form id="loginForm">
                     <div class="form-group">
-                        <label for="employeeId">Employee ID</label>
+                        <label for="employeeEmail">Employee Email</label>
                         <div class="input-wrap">
                             <span class="input-icon">▤</span>
                             <input
-                                type="text"
-                                id="employeeId"
-                                name="employeeId"
-                                placeholder="Enter your employee ID"
+                                type="email"
+                                id="employeeEmail"
+                                name="employeeEmail"
+                                placeholder="Enter your employee email"
                                 autocomplete="username"
                                 required
                             >
@@ -101,6 +101,11 @@
                     <button type="submit" class="login-button" id="loginButton">
                         Sign In <span>→</span>
                     </button>
+
+                    <p class="create-account">
+                        Don't have an account?
+                        <a href="/frontend/createloginemployer/index.html">Create Account</a>
+                    </p>
                 </form>
 
                 <div class="security-note">
@@ -118,6 +123,6 @@
         </section>
     </main>
 
-    <script src="script.js"></script>
+    <script src="/frontend/employeerloginpage/script.js"></script>
 </body>
 </html>

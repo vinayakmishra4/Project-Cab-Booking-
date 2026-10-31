@@ -1,6 +1,6 @@
 
 const loginForm = document.getElementById("loginForm");
-const employeeId = document.getElementById("employeeId");
+const employeeEmail = document.getElementById("employeeEmail");
 const password = document.getElementById("password");
 const togglePassword = document.getElementById("togglePassword");
 const message = document.getElementById("message");
@@ -29,21 +29,21 @@ function showMessage(text, type) {
 loginForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    const id = employeeId.value.trim();
+    const email = employeeEmail.value.trim();
     const pass = password.value;
 
     message.textContent = "";
     message.className = "message";
 
-    if (!id || !pass.trim()) {
+    if (!email || !pass.trim()) {
         showMessage(
-            "Please enter your employee ID and password.",
+            "Please enter your employee email and password.",
             "error"
         );
         return;
     }
 
-    if (id.length > 100 || pass.length > 256) {
+    if (email.length > 254 || pass.length > 256) {
         showMessage("Please check your entered credentials.", "error");
         return;
     }
