@@ -1,67 +1,86 @@
 
-const form = document.getElementById("registerForm");
+document.addEventListener("DOMContentLoaded", function () {
 
-form.addEventListener("submit", async function(event) {
+    const form = document.getElementById("registerForm");
 
-    event.preventDefault();
+    if (!form) {
+        console.error("registerForm not found!");
+        return;
+    }
 
-    const button = document.getElementById("submitBtn");
-    const message = document.getElementById("message");
+    form.addEventListener("submit", async function (event) {
 
-    const employeeData = {
-        eid: document.getElementById("eid").value.trim(),
-        name: document.getElementById("name").value.trim(),
-        email: document.getElementById("email").value.trim(),
-        address: document.getElementById("address").value.trim(),
-        password: document.getElementById("password").value
-    };
+        event.preventDefault();
 
-    try {
+        const button = document.getElementById("submitBtn");
+        const message = document.getElementById("message");
 
-        button.disabled = true;
-        button.textContent = "Saving...";
-        message.textContent = "Please wait...";
+        const eid = document.getElementById("eid");
+        const name = document.getElementById("name");
+        const email = document.getElementById("email");
+        const address = document.getElementById("address");
+        const password = document.getElementById("password");
 
-        const response = await fetch("/api/register", {
+        if (!button || !message || !eid || !name ||
+            !email || !address || !password) {
+            console.error("One or more HTML elements are missing.");
+            return;
+        }
 
-            method: "POST",
+        const employeeData = {
+            eid: eid.value.trim(),
+            name: name.value.trim(),
+            email: email.value.trim(),
+            address: address.value.trim(),
+            password: password.value
+        };
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+        try {
 
-            body: JSON.stringify(employeeData)
+            button.disabled = true;
+            button.textContent = "Saving...";
+            message.textContent = "Please wait...";
 
-        });
+            const response = await fetch("/api/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(employeeData)
+            });
 
-        const result = await response.json();
+            const result = await response.json();
 
-        if (response.ok && result.success) {
+            if (response.ok && result.success) {
 
-            message.style.color = "green";
-            message.textContent = result.message;
+                message.style.color = "green";
+                message.textContent = result.message;
 
-            form.reset();
+                form.reset();
 
-        } else {
+            } else {
+
+                message.style.color = "red";
+                message.textContent =
+                    result.message || "Registration failed.";
+
+            }
+
+        } catch (error) {
+
+            console.error("Registration error:", error);
 
             message.style.color = "red";
-            message.textContent = result.message;
+            message.textContent =
+                "Unable to connect to the server.";
+
+        } finally {
+
+            button.disabled = false;
+            button.textContent = "Register Employee";
 
         }
 
-    } catch (error) {
-
-        console.error(error);
-
-        message.style.color = "red";
-        message.textContent = "Unable to connect to the server.";
-
-    } finally {
-
-        button.disabled = false;
-        button.textContent = "Register Employee";
-
-    }
+    });
 
 });
