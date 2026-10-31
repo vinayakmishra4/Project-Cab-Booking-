@@ -2,7 +2,7 @@
   "name": "project-cab-booking-",
   "version": "1.0.0",
   "description": "Full-stack cab booking application with vehicle and category management, customer registration, location-based vehicle allocation, distance-based fare calculation, GST, and itemized billing.",
-  "main": "script.js",
+  "main": "sever.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
