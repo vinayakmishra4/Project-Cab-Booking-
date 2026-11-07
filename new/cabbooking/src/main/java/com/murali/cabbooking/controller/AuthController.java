@@ -173,8 +173,27 @@ public class AuthController {
         }
 
         if (portal.equals("ADMIN")) {
-            Admin admin = adminRepository.findByEmail(email).orElse(null);
-            if (admin == null || !admin.isEnabled()
+            Admin admin = adminRepository.findByEmailIgnoreCase(email).orElse(null);
+            if (admin == null) {
+                User legacyAdmin = userRepository.findByEmail(email)
+                        .filter(user -> user.getRole() == Role.ADMIN && user.isEnabled())
+                        .orElse(null);
+                if (legacyAdmin == null
+                        || !passwordEncoder.matches(request.getPassword(), legacyAdmin.getPassword())) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                            .body("Invalid email or password for the selected portal.");
+                }
+
+                admin = Admin.builder()
+                        .name(legacyAdmin.getName() == null ? email : legacyAdmin.getName())
+                        .email(legacyAdmin.getEmail())
+                        .phone(legacyAdmin.getPhone())
+                        .password(legacyAdmin.getPassword())
+                        .enabled(legacyAdmin.isEnabled())
+                        .build();
+                admin = adminRepository.save(admin);
+            }
+            if (!admin.isEnabled()
                     || !passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body("Invalid email or password for the selected portal.");

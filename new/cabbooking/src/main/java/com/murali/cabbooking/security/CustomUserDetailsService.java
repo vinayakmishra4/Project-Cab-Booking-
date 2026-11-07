@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        var admin = adminRepository.findByEmail(email);
+        var admin = adminRepository.findByEmailIgnoreCase(email);
         if (admin.isPresent()) {
             return new org.springframework.security.core.userdetails.User(
                     admin.get().getEmail(),

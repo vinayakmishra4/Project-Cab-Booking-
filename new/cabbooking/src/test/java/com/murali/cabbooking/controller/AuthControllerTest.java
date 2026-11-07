@@ -120,7 +120,7 @@ class AuthControllerTest {
                 .password("encoded-password")
                 .enabled(true)
                 .build();
-        when(adminRepository.findByEmail("person@example.com")).thenReturn(Optional.of(admin));
+        when(adminRepository.findByEmailIgnoreCase("person@example.com")).thenReturn(Optional.of(admin));
         when(jwtUtil.generateToken("person@example.com", "ADMIN")).thenReturn("admin-token");
 
         ResponseEntity<?> response = authController.login(request("ADMIN"));
@@ -131,6 +131,45 @@ class AuthControllerTest {
     }
 
     @Test
+    void adminPortalAcceptsMixedCaseStoredEmail() {
+        Admin admin = Admin.builder()
+                .name("Portal Admin")
+                .email("CabAdmin02@Motherson.com")
+                .password("encoded-password")
+                .enabled(true)
+                .build();
+        when(adminRepository.findByEmailIgnoreCase("cabadmin02@motherson.com"))
+                .thenReturn(Optional.of(admin));
+        when(passwordEncoder.matches("password", "encoded-password")).thenReturn(true);
+        when(jwtUtil.generateToken("CabAdmin02@Motherson.com", "ADMIN")).thenReturn("admin-token");
+
+        AuthRequest loginRequest = request("ADMIN");
+        loginRequest.setEmail("cabadmin02@motherson.com");
+        ResponseEntity<?> response = authController.login(loginRequest);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("admin-token", assertInstanceOf(AuthResponse.class, response.getBody()).getToken());
+    }
+
+    @Test
+    void adminPortalMigratesLegacyAdminAccountOnLogin() {
+        user.setRole(Role.ADMIN);
+        when(adminRepository.findByEmailIgnoreCase("person@example.com")).thenReturn(Optional.empty());
+        when(adminRepository.save(any(Admin.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(jwtUtil.generateToken("person@example.com", "ADMIN")).thenReturn("admin-token");
+
+        ResponseEntity<?> response = authController.login(request("ADMIN"));
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("admin-token", assertInstanceOf(AuthResponse.class, response.getBody()).getToken());
+        verify(adminRepository).save(argThat(admin ->
+                admin.getEmail().equals("person@example.com")
+                        && admin.getPassword().equals("encoded-password")
+                        && admin.isEnabled()
+        ));
+    }
+
+    @Test
     void adminPortalRehashesPasswordWhenStoredEncodingNeedsUpgrade() {
         Admin admin = Admin.builder()
                 .name("Portal Admin")
@@ -138,7 +177,7 @@ class AuthControllerTest {
                 .password("legacy-encoded-password")
                 .enabled(true)
                 .build();
-        when(adminRepository.findByEmail("person@example.com")).thenReturn(Optional.of(admin));
+        when(adminRepository.findByEmailIgnoreCase("person@example.com")).thenReturn(Optional.of(admin));
         when(passwordEncoder.matches("password", "legacy-encoded-password")).thenReturn(true);
         when(passwordEncoder.upgradeEncoding("legacy-encoded-password")).thenReturn(true);
         when(passwordEncoder.encode("password")).thenReturn("current-encoded-password");

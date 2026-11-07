@@ -17,3 +17,17 @@ In Command Prompt:
 set DB_PASSWORD=your-postgres-password
 mvnw.cmd spring-boot:run
 ```
+
+If startup previously failed during a Flyway migration and Flyway reports a failed migration, repair its schema history before restarting. In PowerShell, from this project directory:
+
+```powershell
+.\mvnw.cmd org.flywaydb:flyway-maven-plugin:11.7.2:repair `
+  "-Dflyway.url=jdbc:postgresql://localhost:5432/cabbooking" `
+  "-Dflyway.user=postgres" `
+  "-Dflyway.password=$env:DB_PASSWORD"
+.\mvnw.cmd spring-boot:run
+```
+
+If you configured a different database URL or username, use those values in the repair command as well.
+
+Legacy administrator accounts stored in the `users` table are copied to `admins` by Flyway migration V6 when the backend starts. An enabled legacy administrator can also be migrated on successful login if the corresponding `admins` row is missing.
