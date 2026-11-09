@@ -22,6 +22,13 @@
     "react-scripts": "^5.0.1",
     "web-vitals": "^2.1.4"
   },
+  "overrides": {
+    "nth-check": "2.0.1",
+    "resolve-url-loader": "5.0.0",
+    "serialize-javascript": "7.1.4",
+    "svgo": "2.8.4",
+    "underscore": "1.13.8"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
