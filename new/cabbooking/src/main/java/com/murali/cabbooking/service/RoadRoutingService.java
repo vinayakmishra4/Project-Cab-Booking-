@@ -2,6 +2,7 @@ package com.murali.cabbooking.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.murali.cabbooking.dto.RideFareOption;
 import com.murali.cabbooking.dto.RideEstimateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,8 +16,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,14 @@ public class RoadRoutingService {
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5))
             .build();
-    private static final double FARE_PER_KILOMETER = 20;
+    private static final Map<String, Double> FARE_PER_KILOMETER = new LinkedHashMap<>();
+
+    static {
+        FARE_PER_KILOMETER.put("Mini", 25.0);
+        FARE_PER_KILOMETER.put("Sedan", 30.0);
+        FARE_PER_KILOMETER.put("SUV", 35.0);
+        FARE_PER_KILOMETER.put("XL", 40.0);
+    }
 
     private final ObjectMapper objectMapper;
 
@@ -81,11 +91,14 @@ public class RoadRoutingService {
             List<RideEstimateResponse.RouteCoordinate> routeCoordinates = shortest.coordinates().stream()
                     .map(point -> new RideEstimateResponse.RouteCoordinate(point.latitude(), point.longitude()))
                     .toList();
-            return new RideEstimateResponse(
-                    shortest.distanceKm(),
-                    Math.round(shortest.distanceKm() * FARE_PER_KILOMETER),
-                    routeCoordinates
-            );
+            List<RideFareOption> fareOptions = FARE_PER_KILOMETER.entrySet().stream()
+                    .map(entry -> new RideFareOption(
+                            entry.getKey(),
+                            entry.getValue(),
+                            calculateFare(shortest.distanceKm(), entry.getValue())
+                    ))
+                    .toList();
+            return new RideEstimateResponse(shortest.distanceKm(), fareOptions.get(0).fare(), routeCoordinates, fareOptions);
         } catch (ResponseStatusException exception) {
             throw exception;
         } catch (InterruptedException exception) {
@@ -102,6 +115,28 @@ public class RoadRoutingService {
                     exception
             );
         }
+
+    }
+
+    public static double fareFor(String vehicleType, double distanceKm) {
+        return calculateFare(distanceKm, ratePerKilometerFor(vehicleType));
+    }
+
+    public static double ratePerKilometerFor(String vehicleType) {
+        return FARE_PER_KILOMETER.get(canonicalVehicleType(vehicleType));
+    }
+
+    public static String canonicalVehicleType(String vehicleType) {
+        if (vehicleType != null) {
+            for (Map.Entry<String, Double> entry : FARE_PER_KILOMETER.entrySet()) {
+                if (entry.getKey().equalsIgnoreCase(vehicleType.trim())) return entry.getKey();
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Select a valid car type.");
+    }
+
+    private static double calculateFare(double distanceKm, double ratePerKilometer) {
+        return Math.round(distanceKm * ratePerKilometer);
     }
 
     private void validateCoordinates(double pickupLat, double pickupLng, double dropLat, double dropLng) {

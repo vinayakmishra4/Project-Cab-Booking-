@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import api from "../services/api";
 import AdminModal from "../components/AdminModal";
 import AdminPageHeader from "../components/AdminPageHeader";
@@ -70,7 +69,6 @@ function Drivers() {
     return (
         <div className="admin-data-page">
             <AdminPageHeader title="Drivers" description="Driver directory and assigned vehicle status." actions={<>
-                <Link className="admin-secondary-button" to="/add-driver">Add driver</Link>
                 <button className="admin-refresh-button" type="button" disabled={loading} onClick={loadDrivers}>{loading ? "Loading…" : "↻ Refresh"}</button>
             </>} />
             <section className="admin-panel admin-list-panel">

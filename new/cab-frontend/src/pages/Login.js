@@ -78,20 +78,14 @@ function Login() {
 
         <main className="login-page">
             <section className="login-story">
-                <Link to="/" className="brand-lockup" aria-label="MyGoCab home">
+                <Link to="/" className="brand-lockup" aria-label="GoCab home">
                     <span className="brand-mark">M</span>
-                    <span className="brand-word">My<span>GoCab</span></span>
+                    <span className="brand-copy">
+                        <span className="brand-word">Go<span>Cab</span></span>
+                    </span>
                 </Link>
                 <div className="login-story-copy">
-                    <p className="eyebrow">MOTHERSON · EMPLOYEE MOBILITY</p>
                     <h1>Every journey,<br/>made <span>simpler.</span></h1>
-                    <p className="login-story-description">
-                        A smoother way to move your people. Sign in to your dedicated GoCab workspace.
-                    </p>
-                </div>
-                <div className="login-story-footer">
-                    <span className="story-orbit" aria-hidden="true">✳</span>
-                    <span>Reliable rides. Thoughtful journeys.</span>
                 </div>
             </section>
 

@@ -37,6 +37,7 @@ public class UserRideController {
             @RequestParam Double dropLng,
             @RequestParam(required = false) String pickupAddress,
             @RequestParam(required = false) String dropoffAddress,
+            @RequestParam(defaultValue = "Mini") String vehicleType,
             Authentication authentication
     ) {
 
@@ -49,6 +50,7 @@ public class UserRideController {
                 dropLng,
                 pickupAddress,
                 dropoffAddress,
+                vehicleType,
                 email
         );
     }

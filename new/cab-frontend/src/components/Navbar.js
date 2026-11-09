@@ -17,9 +17,11 @@ function Navbar({ portal = localStorage.getItem("portal") || "EMPLOYEE" }){
     return(
 
         <nav className="app-navbar">
-            <Link className="navbar-brand" to={home} aria-label="MyGoCab dashboard">
+            <Link className="navbar-brand" to={home} aria-label="GoCab dashboard">
                 <span className="brand-mark navbar-brand-mark">M</span>
-                <span className="brand-word">My<span>GoCab</span></span>
+                <span className="brand-copy">
+                    <span className="brand-word">Go<span>Cab</span></span>
+                </span>
             </Link>
             <div className="navbar-links">
                 {links.map((link) => (

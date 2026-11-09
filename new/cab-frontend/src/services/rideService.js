@@ -5,7 +5,8 @@ export const estimateRide = (rideData) => api.get("/api/user/estimate-ride", {
         pickupLat: rideData.pickupLat,
         pickupLng: rideData.pickupLng,
         dropLat: rideData.dropLat,
-        dropLng: rideData.dropLng
+        dropLng: rideData.dropLng,
+        vehicleType: rideData.vehicleType
     }
 });
 
@@ -29,7 +30,8 @@ export const bookRide = async (rideData, token = localStorage.getItem("token")) 
                 dropLat: rideData.dropLat,
                 dropLng: rideData.dropLng,
                 pickupAddress: rideData.pickupAddress,
-                dropoffAddress: rideData.dropoffAddress
+                dropoffAddress: rideData.dropoffAddress,
+                vehicleType: rideData.vehicleType
             },
             headers: {
                 Authorization: `Bearer ${token}`

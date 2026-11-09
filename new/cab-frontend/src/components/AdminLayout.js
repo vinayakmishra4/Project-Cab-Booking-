@@ -62,9 +62,11 @@ function AdminLayout() {
     return (
         <div className="admin-portal">
             <aside className="admin-sidebar">
-                <Link className="portal-side-brand" to="/admin">
+                <Link className="portal-side-brand" to="/admin" aria-label="GoCab admin home">
                     <span className="brand-mark portal-brand-mark">M</span>
-                    <span className="brand-word">My<span>GoCab</span></span>
+                    <span className="brand-copy">
+                        <span className="brand-word">Go<span>Cab</span></span>
+                    </span>
                     <small>EMPLOYEE TRANSPORT</small>
                 </Link>
                 <div className="admin-workspace-badge">

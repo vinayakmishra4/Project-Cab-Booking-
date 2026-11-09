@@ -64,8 +64,10 @@ public class RideService {
                          Double dropLng,
                          String pickupAddress,
                          String dropoffAddress,
+                         String vehicleType,
                          String userEmail) {
 
+        vehicleType = RoadRoutingService.canonicalVehicleType(vehicleType);
         Employee employee = employeeRepository.findByEmail(userEmail).orElse(null);
         User user = employee == null
                 ? userRepository.findByEmail(userEmail)
@@ -73,10 +75,12 @@ public class RideService {
                     .orElseThrow(() -> new RuntimeException("User not found"))
                 : null;
 
-        List<Cab> availableCabs = cabRepository.findByAvailableTrueAndOnlineTrue();
+        List<Cab> availableCabs = cabRepository.findByAvailableTrueAndOnlineTrue().stream()
+                .filter(cab -> vehicleType.equalsIgnoreCase(cab.getVehicleType()))
+                .toList();
 
         if (availableCabs.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "No drivers are currently on duty. Please try again shortly.");
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "No " + vehicleType + " cars are currently on duty. Choose another car type or try again shortly.");
         }
 
         /* FIND NEAREST DRIVER */
@@ -116,7 +120,7 @@ public class RideService {
                 .pickupAddress(normalizeAddress(pickupAddress))
                 .dropoffAddress(normalizeAddress(dropoffAddress))
                 .distanceKm(estimate.distanceKm())
-                .fare(estimate.fare())
+                .fare(RoadRoutingService.fareFor(vehicleType, estimate.distanceKm()))
                 .status(RideStatus.REQUESTED)
                 .user(user)
                 .employee(employee)

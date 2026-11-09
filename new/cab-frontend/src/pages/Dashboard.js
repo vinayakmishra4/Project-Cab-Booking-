@@ -70,15 +70,18 @@ function Dashboard() {
     return (
         <div className="employee-workspace">
             <aside className="employee-sidebar">
-                <Link to="/dashboard" className="employee-brand" aria-label="MyGoCab employee mobility">
+                <Link to="/dashboard" className="employee-brand" aria-label="GoCab employee mobility home">
                     <span className="brand-mark">M</span>
-                    <span><strong>My<span>GoCab</span></strong><small>EMPLOYEE MOBILITY</small></span>
+                    <span className="brand-copy">
+                        <strong className="brand-word">Go<span>Cab</span></strong>
+                        <small>EMPLOYEE MOBILITY</small>
+                    </span>
                 </Link>
 
                 <p className="employee-sidebar-label">WORKSPACE</p>
                 <nav className="employee-nav" aria-label="Employee workspace">
                     <Link to="/dashboard" className="active"><span aria-hidden="true">▦</span> Dashboard</Link>
-                    <Link to="/history"><span aria-hidden="true">▤</span> My bookings</Link>
+                    <Link to="/history"><span aria-hidden="true">▤</span> My bookings{!loading && !error && rides.length > 0 && <span className="employee-nav-count" aria-label={`${rides.length} bookings`}>{rides.length}</span>}</Link>
                     <Link to="/book"><span aria-hidden="true">⌖</span> Book a cab</Link>
                     <Link to="/live-track"><span aria-hidden="true">◎</span> Live tracking</Link>
                 </nav>

@@ -16,10 +16,10 @@ import AdminEmployees from "./pages/AdminEmployees"
 import AdminFleet from "./pages/AdminFleet"
 import AdminBilling from "./pages/AdminBilling"
 import Drivers from "./pages/Drivers"
-import AddDriver from "./pages/AddDriver"
 import Payment from "./pages/Payment"
 import DriverDashboard from "./pages/DriverDashboard"
 import PortalRoute from "./components/PortalRoute"
+import SiteFooter from "./components/SiteFooter"
 
 function App(){
 
@@ -50,11 +50,12 @@ function App(){
                     <Route path="billing" element={<AdminBilling/>}/>
                 </Route>
                 <Route path="/drivers" element={<PortalRoute portal="ADMIN"><Navigate to="/admin/drivers" replace/></PortalRoute>}/>
-                <Route path="/add-driver" element={<PortalRoute portal="ADMIN"><AddDriver/></PortalRoute>}/>
+                <Route path="/add-driver" element={<PortalRoute portal="ADMIN"><Navigate to="/admin/drivers" replace/></PortalRoute>}/>
 
                 <Route path="/payment" element={<PortalRoute portal="EMPLOYEE"><Payment/></PortalRoute>}/>
 
             </Routes>
+            <SiteFooter/>
 
         </BrowserRouter>
 

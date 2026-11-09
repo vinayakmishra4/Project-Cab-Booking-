@@ -72,12 +72,14 @@ function ChangePassword() {
     return (
         <main className="login-page">
             <section className="login-story">
-                <Link to="/" className="brand-lockup" aria-label="MyGoCab home">
+                <Link to="/" className="brand-lockup" aria-label="GoCab home">
                     <span className="brand-mark">M</span>
-                    <span className="brand-word">My<span>GoCab</span></span>
+                    <span className="brand-copy">
+                        <span className="brand-word">Go<span>Cab</span></span>
+                    </span>
                 </Link>
                 <div className="login-story-copy">
-                    <p className="eyebrow">MOTHERSON · EMPLOYEE MOBILITY</p>
+                    <p className="eyebrow">ACCOUNT RECOVERY</p>
                     <h1>Account access,<br/><span>restored.</span></h1>
                     <p className="login-story-description">
                         Change your {portalTitle.toLowerCase()} account password securely.

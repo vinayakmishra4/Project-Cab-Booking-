@@ -38,7 +38,7 @@ function BookRide(){
     const [dropText,setDropText] = useState(searchParams.get("drop") || recoveryDraft?.dropText || "")
     const [locationError,setLocationError] = useState("")
 
-    const [fare,setFare] = useState(null)
+    const [fareOptions,setFareOptions] = useState([])
     const [distance,setDistance] = useState(null)
     const [routeCoordinates,setRouteCoordinates] = useState(null)
     const [calculatingFare,setCalculatingFare] = useState(false)
@@ -49,6 +49,7 @@ function BookRide(){
         : "")
 
     const [carType,setCarType] = useState(recoveryDraft?.carType || "Mini")
+    const fare = fareOptions.find((option) => option.vehicleType === carType)?.fare ?? null
     const gstAmount = fare === null ? null : Math.round(fare * 0.18 * 100) / 100
     const totalFare = fare === null ? null : Math.round((fare + gstAmount) * 100) / 100
 
@@ -104,7 +105,7 @@ function BookRide(){
         setLocationError("")
         setBookingError("")
         setAuthRequired(false)
-        setFare(null)
+        setFareOptions([])
         setDistance(null)
         setRouteCoordinates(null)
         setCalculatingFare(true)
@@ -117,12 +118,16 @@ function BookRide(){
             })
             const estimate = response.data
             if (!Number.isFinite(Number(estimate?.distanceKm))
-                || !Number.isFinite(Number(estimate?.fare))
-                || Number(estimate.distanceKm) <= 0) {
+                || Number(estimate.distanceKm) <= 0
+                || !Array.isArray(estimate?.fareOptions)
+                || !estimate.fareOptions.length
+                || estimate.fareOptions.some((option) => !option.vehicleType
+                    || !Number.isFinite(Number(option.fare))
+                    || !Number.isFinite(Number(option.ratePerKm)))) {
                 throw new Error("The routing service returned an invalid fare estimate. Please try again.")
             }
             setDistance(Number(estimate.distanceKm))
-            setFare(Number(estimate.fare))
+            setFareOptions(estimate.fareOptions)
             setRouteCoordinates(Array.isArray(estimate.routeCoordinates) ? estimate.routeCoordinates : null)
         } catch (requestError) {
             if (requestError.response?.status === 401) {
@@ -159,7 +164,8 @@ function BookRide(){
                 dropLat: drop.lat,
                 dropLng: drop.lng,
                 pickupAddress: pickupText,
-                dropoffAddress: dropText
+                dropoffAddress: dropText,
+                vehicleType: carType
             })
             const rideId = response.data?.id
             if (rideId == null) {
@@ -188,11 +194,11 @@ function BookRide(){
 
     return(
 
-        <div>
+        <div className="book-ride-page">
 
             <Navbar/>
 
-            <div style={{display:"flex"}}>
+            <div className="book-ride-layout" style={{display:"flex"}}>
 
                 <div style={{
                     width:"350px",
@@ -200,7 +206,8 @@ function BookRide(){
                     background:"var(--surface)",
                     color:"var(--text)",
                     borderRight:"1px solid var(--border)",
-                    height:"100vh"
+                    minHeight:"calc(100vh - 112px)",
+                    overflowY:"auto"
                 }}>
 
                     <h2>Book Ride</h2>
@@ -218,14 +225,14 @@ function BookRide(){
                             onChange={(value)=>{
                                 setPickupText(value)
                                 setPickup(null)
-                                setFare(null)
+                                setFareOptions([])
                                 setDistance(null)
                                 setRouteCoordinates(null)
                             }}
                             onSelect={(location)=>{
                                 setPickupText(location.label)
                                 setPickup({ lat:location.lat, lng:location.lng })
-                                setFare(null)
+                                setFareOptions([])
                                 setDistance(null)
                                 setRouteCoordinates(null)
                                 setLocationError("")
@@ -246,14 +253,14 @@ function BookRide(){
                             onChange={(value)=>{
                                 setDropText(value)
                                 setDrop(null)
-                                setFare(null)
+                                setFareOptions([])
                                 setDistance(null)
                                 setRouteCoordinates(null)
                             }}
                             onSelect={(location)=>{
                                 setDropText(location.label)
                                 setDrop({ lat:location.lat, lng:location.lng })
-                                setFare(null)
+                                setFareOptions([])
                                 setDistance(null)
                                 setRouteCoordinates(null)
                                 setLocationError("")
@@ -261,21 +268,37 @@ function BookRide(){
                         />
                     </label>
 
-                    <h3>Select Car</h3>
-
-                    <select
-                        value={carType}
-                        disabled={calculatingFare || booking}
-                        onChange={(e)=>setCarType(e.target.value)}
-                        style={{width:"100%",padding:"10px",marginBottom:"10px"}}
-                    >
-
-                        <option value="Mini">Mini (4 seats)</option>
-                        <option value="Sedan">Sedan (4 seats)</option>
-                        <option value="SUV">SUV (6 seats)</option>
-                        <option value="XL">XL (8 seats)</option>
-
-                    </select>
+                    <h3>Compare cab fares</h3>
+                    {fareOptions.length ? (
+                        <div className="cab-comparison-list" role="group" aria-label="Choose a cab type">
+                            {fareOptions.map((option) => {
+                                const optionGst = Math.round(Number(option.fare) * 0.18 * 100) / 100
+                                const optionTotal = Math.round((Number(option.fare) + optionGst) * 100) / 100
+                                const selected = carType === option.vehicleType
+                                return (
+                                    <button
+                                        key={option.vehicleType}
+                                        type="button"
+                                        className={`cab-comparison-option${selected ? " selected" : ""}`}
+                                        aria-pressed={selected}
+                                        disabled={booking || calculatingFare}
+                                        onClick={() => {
+                                            setCarType(option.vehicleType)
+                                            setBookingError("")
+                                            setAuthRequired(false)
+                                        }}
+                                    >
+                                        <span className="cab-comparison-name">{option.vehicleType}</span>
+                                        <span className="cab-comparison-rate">₹{Number(option.ratePerKm).toLocaleString("en-IN")}/km</span>
+                                        <span className="cab-comparison-fare">₹{Number(option.fare).toLocaleString("en-IN")} fare</span>
+                                        <span className="cab-comparison-total">₹{optionTotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} incl. GST</span>
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    ) : (
+                        <p className="cab-comparison-hint">Choose pickup and destination, then compare available cab fares.</p>
+                    )}
 
                     <button
                         onClick={calculateFare}
@@ -289,7 +312,7 @@ function BookRide(){
                             marginTop:"10px"
                         }}
                     >
-                        {calculatingFare ? "Finding shortest road route…" : "Calculate Fare"}
+                        {calculatingFare ? "Comparing cab fares…" : "Compare fares"}
                     </button>
 
                     {(locationError || bookingError) && (
@@ -299,7 +322,7 @@ function BookRide(){
                         </div>
                     )}
 
-                    {fare && (
+                    {fare !== null && (
 
                         <div style={{marginTop:"20px"}}>
 
@@ -310,7 +333,7 @@ function BookRide(){
                             <p style={{fontSize:"18px", fontWeight:700}}>
                                 Total including GST: ₹{totalFare.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </p>
-                            <p className="bookride-fare-note">Ride fare is calculated at ₹20 per routed kilometre; GST is added to the bill.</p>
+                            <p className="bookride-fare-note">{carType} fare is calculated at ₹{fareOptions.find((option) => option.vehicleType === carType)?.ratePerKm}/km; GST is added to the bill.</p>
 
                             <button
                                 onClick={confirmRide}
@@ -338,8 +361,18 @@ function BookRide(){
                         pickup={pickup}
                         drop={drop}
                         routeCoordinates={routeCoordinates}
-                        setPickup={setPickup}
-                        setDrop={setDrop}
+                        setPickup={(location) => {
+                            setPickup(location)
+                            setFareOptions([])
+                            setDistance(null)
+                            setRouteCoordinates(null)
+                        }}
+                        setDrop={(location) => {
+                            setDrop(location)
+                            setFareOptions([])
+                            setDistance(null)
+                            setRouteCoordinates(null)
+                        }}
                         interactive={!calculatingFare && !booking}
                     />
 

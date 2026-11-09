@@ -74,20 +74,20 @@ function Register() {
     return (
         <main className={`register-page ${driver ? "driver-register" : "employee-register"}`}>
             <section className="register-story">
-                <Link to="/" className="brand-lockup" aria-label="MyGoCab home">
+                <Link to="/" className="brand-lockup" aria-label="GoCab home">
                     <span className="brand-mark">M</span>
-                    <span className="brand-word">My<span>GoCab</span></span>
+                    <span className="brand-copy">
+                        <span className="brand-word">Go<span>Cab</span></span>
+                    </span>
                 </Link>
                 <div className="register-story-copy">
-                    <p className="eyebrow">{driver ? "DRIVER PARTNER PORTAL" : "MOTHERSON · EMPLOYEE MOBILITY"}</p>
+                    {driver && <p className="eyebrow">DRIVER PARTNER PORTAL</p>}
                     <h1>{driver ? <>The road ahead<br/>starts <span>with you.</span></> : <>Your workday<br/>starts <span>with a ride.</span></>}</h1>
-                    <p>{driver
-                        ? "Join the GoCab driver team and make every trip count."
-                        : "Create your employee account for simpler, more reliable work journeys."}</p>
+                    {driver && <p>Join the GoCab driver team and make every trip count.</p>}
                 </div>
                 <div className="register-story-footer">
                     <span className="story-orbit" aria-hidden="true">✳</span>
-                    <span>{driver ? "Every mile matters." : "Reliable rides. Thoughtful journeys."}</span>
+                    {driver && <span>Every mile matters.</span>}
                 </div>
             </section>
 

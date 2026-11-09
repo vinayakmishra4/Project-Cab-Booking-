@@ -225,7 +225,7 @@ function DriverDashboard() {
     return (
         <div className="driver-portal">
             <aside className="driver-sidebar">
-                <a className="portal-side-brand" href="/driver/dashboard" aria-label="MyGoCab driver dashboard"><span className="brand-mark portal-brand-mark">M</span><span className="brand-word">My<span>GoCab</span></span><small>DRIVER</small></a>
+                <a className="portal-side-brand" href="/driver/dashboard" aria-label="GoCab driver dashboard"><span className="brand-mark portal-brand-mark">M</span><span className="brand-copy"><span className="brand-word">Go<span>Cab</span></span></span><small>DRIVER</small></a>
                 <button className="driver-profile" type="button" onClick={openProfile} aria-label="View driver account details">
                     <span className="driver-avatar">{driverName.charAt(0).toUpperCase()}</span>
                     <span className="driver-profile-copy"><strong>{driverName}</strong><span>Driver account</span></span>
