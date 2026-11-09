@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 
 import Login from "./pages/Login"
 import ChangePassword from "./pages/ChangePassword"
@@ -9,6 +9,12 @@ import LiveTrack from "./pages/LiveTrack"
 import RideHistory from "./pages/RideHistory"
 
 import AdminDashboard from "./pages/AdminDashboard"
+import AdminLayout from "./components/AdminLayout"
+import AdminBookings from "./pages/AdminBookings"
+import AdminLiveTrips from "./pages/AdminLiveTrips"
+import AdminEmployees from "./pages/AdminEmployees"
+import AdminFleet from "./pages/AdminFleet"
+import AdminBilling from "./pages/AdminBilling"
 import Drivers from "./pages/Drivers"
 import AddDriver from "./pages/AddDriver"
 import Payment from "./pages/Payment"
@@ -34,8 +40,16 @@ function App(){
 
                 <Route path="/driver/dashboard" element={<PortalRoute portal="DRIVER"><DriverDashboard/></PortalRoute>}/>
 
-                <Route path="/admin" element={<PortalRoute portal="ADMIN"><AdminDashboard/></PortalRoute>}/>
-                <Route path="/drivers" element={<PortalRoute portal="ADMIN"><Drivers/></PortalRoute>}/>
+                <Route path="/admin" element={<PortalRoute portal="ADMIN"><AdminLayout/></PortalRoute>}>
+                    <Route index element={<AdminDashboard/>}/>
+                    <Route path="bookings" element={<AdminBookings/>}/>
+                    <Route path="live-trips" element={<AdminLiveTrips/>}/>
+                    <Route path="employees" element={<AdminEmployees/>}/>
+                    <Route path="drivers" element={<Drivers/>}/>
+                    <Route path="fleet" element={<AdminFleet/>}/>
+                    <Route path="billing" element={<AdminBilling/>}/>
+                </Route>
+                <Route path="/drivers" element={<PortalRoute portal="ADMIN"><Navigate to="/admin/drivers" replace/></PortalRoute>}/>
                 <Route path="/add-driver" element={<PortalRoute portal="ADMIN"><AddDriver/></PortalRoute>}/>
 
                 <Route path="/payment" element={<PortalRoute portal="EMPLOYEE"><Payment/></PortalRoute>}/>

@@ -1,6 +1,7 @@
 package com.murali.cabbooking.repository;
 
 import com.murali.cabbooking.entity.Ride;
+import com.murali.cabbooking.entity.Cab;
 import com.murali.cabbooking.entity.Employee;
 import com.murali.cabbooking.entity.User;
 import com.murali.cabbooking.entity.RideStatus;
@@ -16,6 +17,7 @@ import java.util.List;
 public interface RideRepository extends JpaRepository<Ride, Long> {
     List<Ride> findByUser(User user);
     List<Ride> findByEmployee(Employee employee);
+    List<Ride> findByCabIn(Collection<Cab> cabs);
     List<Ride> findByCab_Driver_EmailOrderByCreatedAtDesc(String email);
     long countByStatus(RideStatus status);
     long countByStatusIn(Collection<RideStatus> statuses);
