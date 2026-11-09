@@ -1,3 +1,4 @@
+
 package com.murali.cabbooking.security;
 
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,14 @@ public class SecurityConfig {
 
                         /* PUBLIC */
                         .requestMatchers(
-                                "/api/auth/**",
-                                "/api/test"
+                        "/",
+                        "/health",
+                        "/error",
+                        "/api/auth/**",
+                        "/api/test",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**"
                         ).permitAll()
 
                         /* USER */
@@ -49,7 +56,9 @@ public class SecurityConfig {
                 )
 
                 .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                        .authenticationEntryPoint(
+                                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
+                        )
                 )
 
                 .sessionManagement(session ->
@@ -61,18 +70,14 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /* THIS FIXES YOUR ERROR */
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /* Authentication Manager */
-
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-            throws Exception {
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 }
