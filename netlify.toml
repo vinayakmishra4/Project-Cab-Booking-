@@ -1,0 +1,19 @@
+# The deployable web app lives in new/cab-frontend (Create React App).
+[build]
+  base    = "new/cab-frontend"
+  # Install dependencies explicitly so react-scripts is available even when
+  # the build runs without Netlify's automatic dependency install step.
+  command = "npm install --no-audit --no-fund && npm run build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # CRA treats lint warnings as errors when CI=true; don't fail deploys on warnings.
+  CI = "false"
+
+# Single-page app fallback so client-side routes (e.g. /dashboard, /admin/billing)
+# resolve to index.html instead of returning a 404 on refresh or direct visit.
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
