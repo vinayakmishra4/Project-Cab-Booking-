@@ -33,14 +33,16 @@ public class SecurityConfig {
 
                         /* PUBLIC */
                         .requestMatchers(
-                        "/",
-                        "/health",
-                        "/error",
-                        "/api/auth/**",
-                        "/api/test",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html",
-                        "/v3/api-docs/**"
+                                "/",
+                                "/health",
+                                "/error",
+                                "/api/auth/**",
+                                "/api/test",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/ws",
+                                "/ws/**"
                         ).permitAll()
 
                         /* USER */

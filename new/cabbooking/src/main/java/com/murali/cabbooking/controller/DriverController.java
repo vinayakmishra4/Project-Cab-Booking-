@@ -12,6 +12,7 @@ import com.murali.cabbooking.dto.DriverProfileUpdateRequest;
 import com.murali.cabbooking.repository.CabRepository;
 import com.murali.cabbooking.repository.RideRepository;
 import com.murali.cabbooking.repository.UserRepository;
+import com.murali.cabbooking.service.RideNotificationService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ public class DriverController {
     private final CabRepository cabRepository;
     private final RideRepository rideRepository;
     private final UserRepository userRepository;
+    private final RideNotificationService rideNotificationService;
 
     // Driver Dashboard
     @GetMapping("/dashboard")
@@ -204,7 +206,10 @@ public class DriverController {
 
         ride.setStatus(RideStatus.ACCEPTED);
 
-        return rideRepository.save(ride);
+        Ride savedRide = rideRepository.save(ride);
+        rideNotificationService.sendRideStatusUpdate(savedRide);
+
+        return savedRide;
     }
 
     // Start Ride
@@ -239,7 +244,10 @@ public class DriverController {
 
         ride.setStatus(RideStatus.STARTED);
 
-        return rideRepository.save(ride);
+        Ride savedRide = rideRepository.save(ride);
+        rideNotificationService.sendRideStatusUpdate(savedRide);
+
+        return savedRide;
     }
 
     // Complete Ride
@@ -279,7 +287,10 @@ public class DriverController {
 
         cabRepository.save(cab);
 
-        return rideRepository.save(ride);
+        Ride savedRide = rideRepository.save(ride);
+        rideNotificationService.sendRideStatusUpdate(savedRide);
+
+        return savedRide;
     }
 
     // Cancel Ride - Only before acceptance
@@ -319,7 +330,10 @@ public class DriverController {
 
         cabRepository.save(cab);
 
-        return rideRepository.save(ride);
+        Ride savedRide = rideRepository.save(ride);
+        rideNotificationService.sendRideStatusUpdate(savedRide);
+
+        return savedRide;
     }
 
     // Update Driver Location

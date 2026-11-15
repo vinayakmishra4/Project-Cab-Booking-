@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LocationSearchField from "../components/LocationSearchField";
 import { getRideHistory } from "../services/rideService";
+import { Client } from "@stomp/stompjs";
 
 const activeStatuses = ["REQUESTED", "ACCEPTED", "STARTED"];
 
@@ -51,27 +52,68 @@ function Dashboard() {
         }
     }, []);
 
-    // Initial load and automatic refresh every 5 seconds.
+    // Initial load and instant ride-status updates through WebSocket.
     useEffect(() => {
-        let mounted = true;
+    // Load existing rides when the dashboard opens.
+        loadRides();
 
-        const refreshRides = async (silent = false) => {
-            if (!mounted) return;
+    const token = localStorage.getItem("token");
 
-            await loadRides(silent);
-        };
+    if (!token) {
+        console.error("WebSocket connection skipped: JWT token not found.");
+        return;
+    }
 
-        refreshRides();
+    const wsProtocol =
+        window.location.protocol === "https:" ? "wss:" : "ws:";
 
-        const intervalId = window.setInterval(() => {
-            refreshRides(true);
-        }, 5000);
+    const client = new Client({
+        brokerURL: `${wsProtocol}//${window.location.hostname}:8080/ws`,
 
-        return () => {
-            mounted = false;
-            window.clearInterval(intervalId);
-        };
-    }, [loadRides]);
+        connectHeaders: {
+            Authorization: `Bearer ${token}`,
+        },
+
+        reconnectDelay: 5000,
+
+        heartbeatIncoming: 10000,
+        heartbeatOutgoing: 10000,
+
+        onConnect: () => {
+            console.log("Employee ride notifications connected.");
+
+            client.subscribe("/user/queue/ride-updates", (message) => {
+                try {
+                    const notification = JSON.parse(message.body);
+
+                    console.log("Ride status update received:", notification);
+
+                    // Immediately fetch the latest ride information.
+                    loadRides(true);
+                } catch (notificationError) {
+                    console.error(
+                        "Could not process ride notification:",
+                        notificationError
+                    );
+                }
+            });
+        },
+
+        onStompError: (frame) => {
+            console.error("WebSocket STOMP error:", frame.headers.message);
+        },
+
+        onWebSocketError: (event) => {
+            console.error("WebSocket connection error:", event);
+        },
+    });
+
+    client.activate();
+
+    return () => {
+        client.deactivate();
+    };
+}, [loadRides]);
 
     const upcomingRide = rides.find((ride) =>
         activeStatuses.includes(ride.status)
