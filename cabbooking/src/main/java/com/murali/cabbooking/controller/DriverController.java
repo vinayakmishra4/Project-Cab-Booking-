@@ -1,3 +1,4 @@
+
 package com.murali.cabbooking.controller;
 
 import com.murali.cabbooking.entity.Cab;
@@ -30,10 +31,10 @@ public class DriverController {
     private final RideRepository rideRepository;
     private final UserRepository userRepository;
 
-    // 🚗 Driver Dashboard
+    // Driver Dashboard
     @GetMapping("/dashboard")
     public String dashboard(Authentication authentication) {
-        return "Welcome Driver 🚗 " + authentication.getName();
+        return "Welcome Driver " + authentication.getName();
     }
 
     @GetMapping("/my-cab")
@@ -54,14 +55,19 @@ public class DriverController {
     ) {
         User driver = getDriver(authentication);
         String licenseNumber = request.licenseNumber().trim().toUpperCase();
+
         if (!licenseNumber.equalsIgnoreCase(driver.getLicenseNumber())
                 && userRepository.existsByLicenseNumberIgnoreCase(licenseNumber)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "This driving licence number is already in use.");
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "This driving licence number is already in use."
+            );
         }
 
         driver.setName(request.name().trim());
         driver.setPhone(request.phone().trim());
         driver.setLicenseNumber(licenseNumber);
+
         return toProfileResponse(userRepository.save(driver));
     }
 
@@ -71,17 +77,27 @@ public class DriverController {
             Authentication authentication
     ) {
         User driver = getDriver(authentication);
+
         Cab cab = cabRepository.findFirstByDriverOrderByIdAsc(driver)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Register a car before editing its details."));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Register a car before editing its details."
+                ));
+
         String carNumber = request.carNumber().trim().toUpperCase();
+
         if (!carNumber.equalsIgnoreCase(cab.getCarNumber())
                 && cabRepository.existsByCarNumberIgnoreCase(carNumber)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "This registration number is already in use.");
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "This registration number is already in use."
+            );
         }
 
         cab.setModel(request.model().trim());
         cab.setCarNumber(carNumber);
         cab.setVehicleType(request.vehicleType());
+
         return cabRepository.save(cab);
     }
 
@@ -96,14 +112,26 @@ public class DriverController {
     }
 
     @PostMapping("/add-cab")
-    public Cab addCab(@Valid @RequestBody CarRegistrationRequest request, Authentication authentication) {
+    public Cab addCab(
+            @Valid @RequestBody CarRegistrationRequest request,
+            Authentication authentication
+    ) {
         User driver = getDriver(authentication);
+
         if (cabRepository.existsByDriver(driver)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "A car is already registered to this driver.");
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "A car is already registered to this driver."
+            );
         }
+
         String carNumber = request.carNumber().trim().toUpperCase();
+
         if (cabRepository.existsByCarNumberIgnoreCase(carNumber)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "This registration number is already in use.");
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "This registration number is already in use."
+            );
         }
 
         Cab cab = Cab.builder()
@@ -113,6 +141,7 @@ public class DriverController {
                 .available(true)
                 .online(false)
                 .build();
+
         cab.setDriver(driver);
 
         return cabRepository.save(cab);
@@ -120,24 +149,35 @@ public class DriverController {
 
     private User getDriver(Authentication authentication) {
         User driver = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver account not found."));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Driver account not found."
+                ));
+
         if (driver.getRole() != Role.DRIVER) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only drivers can manage car details.");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Only drivers can manage car details."
+            );
         }
+
         return driver;
     }
 
-    // 📋 View Driver Rides
+    // View Driver Rides
     @GetMapping("/my-rides")
     public List<Ride> myRides(Authentication authentication) {
-        return rideRepository.findByCab_Driver_EmailOrderByCreatedAtDesc(authentication.getName());
+        return rideRepository.findByCab_Driver_EmailOrderByCreatedAtDesc(
+                authentication.getName()
+        );
     }
 
-    // ✅ Accept Ride
+    // Accept Ride
     @PostMapping("/accept-ride/{rideId}")
-    public Ride acceptRide(@PathVariable Long rideId,
-                           Authentication authentication) {
-
+    public Ride acceptRide(
+            @PathVariable Long rideId,
+            Authentication authentication
+    ) {
         String email = authentication.getName();
 
         Ride ride = rideRepository.findById(rideId)
@@ -156,22 +196,47 @@ public class DriverController {
         return rideRepository.save(ride);
     }
 
-    // 🏁 Complete Ride
-    @PostMapping("/complete-ride/{rideId}")
-    public Ride completeRide(@PathVariable Long rideId,
-                             Authentication authentication) {
-
+    // Start Ride
+    @PostMapping("/start-ride/{rideId}")
+    public Ride startRide(
+            @PathVariable Long rideId,
+            Authentication authentication
+    ) {
         String email = authentication.getName();
 
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new RuntimeException("Ride not found"));
 
-        if (ride.getStatus() != RideStatus.ACCEPTED) {
-            throw new RuntimeException("Ride not accepted yet");
+        if (!ride.getCab().getDriver().getEmail().equals(email)) {
+            throw new RuntimeException("You are not assigned to this ride");
         }
+
+        if (ride.getStatus() != RideStatus.ACCEPTED) {
+            throw new RuntimeException("Only an accepted ride can be started");
+        }
+
+        ride.setStatus(RideStatus.STARTED);
+
+        return rideRepository.save(ride);
+    }
+
+    // Complete Ride
+    @PostMapping("/complete-ride/{rideId}")
+    public Ride completeRide(
+            @PathVariable Long rideId,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
+
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found"));
 
         if (!ride.getCab().getDriver().getEmail().equals(email)) {
             throw new RuntimeException("You are not assigned to this ride");
+        }
+
+        if (ride.getStatus() != RideStatus.STARTED) {
+            throw new RuntimeException("Only a started ride can be completed");
         }
 
         ride.setStatus(RideStatus.COMPLETED);
@@ -184,11 +249,12 @@ public class DriverController {
         return rideRepository.save(ride);
     }
 
-    // ❌ Cancel Ride
+    // Cancel Ride
     @PostMapping("/cancel-ride/{rideId}")
-    public Ride cancelRideByDriver(@PathVariable Long rideId,
-                                   Authentication authentication) {
-
+    public Ride cancelRideByDriver(
+            @PathVariable Long rideId,
+            Authentication authentication
+    ) {
         String email = authentication.getName();
 
         Ride ride = rideRepository.findById(rideId)
@@ -212,12 +278,13 @@ public class DriverController {
         return rideRepository.save(ride);
     }
 
-    // 📍 Update Driver Location
+    // Update Driver Location
     @PutMapping("/update-location")
-    public Cab updateLocation(@RequestParam Double latitude,
-                              @RequestParam Double longitude,
-                              Authentication authentication) {
-
+    public Cab updateLocation(
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
+            Authentication authentication
+    ) {
         String email = authentication.getName();
 
         User driver = userRepository.findByEmail(email)
@@ -237,10 +304,9 @@ public class DriverController {
         return cabRepository.save(cab);
     }
 
-    // 🟢 Driver Go Online
+    // Driver Go Online
     @PutMapping("/go-online")
     public Cab goOnline(Authentication authentication) {
-
         String email = authentication.getName();
 
         User driver = userRepository.findByEmail(email)
@@ -253,16 +319,14 @@ public class DriverController {
         }
 
         Cab cab = cabs.get(0);
-
         cab.setOnline(true);
 
         return cabRepository.save(cab);
     }
 
-    // 🔴 Driver Go Offline
+    // Driver Go Offline
     @PutMapping("/go-offline")
     public Cab goOffline(Authentication authentication) {
-
         String email = authentication.getName();
 
         User driver = userRepository.findByEmail(email)
@@ -275,23 +339,21 @@ public class DriverController {
         }
 
         Cab cab = cabs.get(0);
-
         cab.setOnline(false);
 
         return cabRepository.save(cab);
     }
 
-    // 🚕 Get Available Driver for Ride (NEW API)
+    // Get Available Driver for Ride
     @GetMapping("/available")
     public Cab getAvailableDriver() {
-
         List<Cab> cabs = cabRepository.findAll()
                 .stream()
                 .filter(cab -> cab.isAvailable() && cab.isOnline())
                 .toList();
 
         if (cabs.isEmpty()) {
-            throw new RuntimeException("No drivers avaiwlable");
+            throw new RuntimeException("No drivers available");
         }
 
         return cabs.get(0);

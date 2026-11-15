@@ -21,18 +21,36 @@ const IdleSessionManager = () => {
         if (!token) return null;
 
         try {
-            const payload = JSON.parse(atob(token.split(".")[1]));
+            const payloadPart = token.split(".")[1];
+
+            if (!payloadPart) return null;
+
+            // Decode Base64URL JWT payload
+            const base64 = payloadPart
+                .replace(/-/g, "+")
+                .replace(/_/g, "/");
+
+            const paddedBase64 = base64.padEnd(
+                Math.ceil(base64.length / 4) * 4,
+                "="
+            );
+
+            const payload = JSON.parse(atob(paddedBase64));
             const role = (payload.role || "").toUpperCase();
 
-            // ADMIN: 15 minutes
-            // EMPLOYEE / DRIVER: 30 minutes
+            // ADMIN and SECTION MANAGER: 15 minutes
+            // EMPLOYEE: 30 minutes
+            // DRIVER: 60 minutes
             const timeoutMs =
-                role === "ADMIN"
+                role === "ADMIN" || role === "SECTION_MANAGER"
                     ? 15 * 60 * 1000
-                    : 30 * 60 * 1000;
+                    : role === "DRIVER"
+                        ? 60 * 60 * 1000
+                        : 30 * 60 * 1000;
 
             return { token, role, timeoutMs };
-        } catch {
+        } catch (error) {
+            console.error("Unable to read JWT session information:", error);
             return null;
         }
     }, [token]);
@@ -76,13 +94,14 @@ const IdleSessionManager = () => {
                 localStorage.removeItem("userName");
 
                 navigate("/", { replace: true });
+
                 isLoggingOutRef.current = false;
             }
         },
         [dispatch, navigate, token]
     );
 
-    // Send backend activity ping (maximum once every 60 seconds)
+    // Send backend activity ping at most once every 60 seconds
     const pingBackendActivity = useCallback(async () => {
         const now = Date.now();
 
@@ -102,16 +121,23 @@ const IdleSessionManager = () => {
     useEffect(() => {
         if (!token) {
             lastActivityRef.current = Date.now();
+            lastPingRef.current = 0;
             return;
         }
+
+        // Start a fresh inactivity timer for the authenticated session
+        lastActivityRef.current = Date.now();
+        lastPingRef.current = 0;
+        isLoggingOutRef.current = false;
 
         const handleUserActivity = () => {
             const session = getSessionInfo();
 
-            if (!session) return;
+            if (!session || isLoggingOutRef.current) return;
 
             const now = Date.now();
 
+            // Do not allow activity to revive an expired session
             if (
                 now - lastActivityRef.current >= session.timeoutMs
             ) {
@@ -129,6 +155,8 @@ const IdleSessionManager = () => {
             "keydown",
             "scroll",
             "touchstart",
+            "click",
+            "pointerdown",
         ];
 
         events.forEach((event) => {
@@ -139,16 +167,16 @@ const IdleSessionManager = () => {
             );
         });
 
-        // Check idle timeout every 15 seconds
+        // Check inactivity every 15 seconds
         const intervalId = setInterval(() => {
             const session = getSessionInfo();
 
-            if (!session) return;
+            if (!session || isLoggingOutRef.current) return;
 
-            if (
-                Date.now() - lastActivityRef.current >=
-                session.timeoutMs
-            ) {
+            const inactiveTime =
+                Date.now() - lastActivityRef.current;
+
+            if (inactiveTime >= session.timeoutMs) {
                 performLogout(true);
             }
         }, 15 * 1000);
