@@ -1,5 +1,7 @@
+
 function DriverCard({ driver }) {
     const cab = driver.cab;
+
     const availability = !driver.enabled
         ? "Account disabled"
         : !cab?.online
@@ -8,50 +10,67 @@ function DriverCard({ driver }) {
                 ? "Online · Available"
                 : "Online · On trip";
 
+    const statusClass = !driver.enabled
+        ? "text-bg-danger"
+        : !cab?.online
+            ? "text-bg-secondary"
+            : cab.available
+                ? "text-bg-success"
+                : "text-bg-warning";
+
     return (
+        <div
+            className="card shadow-sm mt-3"
+            style={{
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                borderRadius: "12px",
+                color: "var(--text)"
+            }}
+        >
+            <div className="card-body">
 
-        <div style={{
-            background:"var(--surface)",
-            border:"1px solid var(--border)",
-            padding:"18px",
-            marginTop:"15px",
-            borderRadius:"12px",
-            color:"var(--text)",
-            boxShadow:"var(--shadow)"
-        }}>
+                <h5 className="card-title fw-bold mb-3">
+                    🚗 Driver Assigned
+                </h5>
 
-            <h3 style={{marginBottom:"10px"}}>
-                🚗 Driver Assigned
-            </h3>
+                <div className="mb-2">
+                    <span className="fw-semibold">Name: </span>
+                    {driver.name}
+                </div>
 
-            <p>
-                <b>Name:</b> {driver.name}
-            </p>
+                <div className="mb-2">
+                    <span className="fw-semibold">Driver ID: </span>
+                    {driver.driverId || "—"}
+                </div>
 
-            <p>
-                <b>Driver ID:</b> {driver.driverId || "—"}
-            </p>
+                <div className="mb-2">
+                    <span className="fw-semibold">Email: </span>
+                    {driver.email || "—"}
+                </div>
 
-            <p>
-                <b>Email:</b> {driver.email || "—"}
-            </p>
+                <div className="mb-2">
+                    <span className="fw-semibold">Phone: </span>
+                    {driver.phone || "—"}
+                </div>
 
-            <p>
-                <b>Phone:</b> {driver.phone || "—"}
-            </p>
+                <div className="mb-3">
+                    <span className="fw-semibold">Vehicle: </span>
+                    {cab
+                        ? `${cab.model || "Vehicle"} · ${cab.carNumber || "No registration"}`
+                        : "No vehicle assigned"}
+                </div>
 
-            <p>
-                <b>Vehicle:</b> {cab ? `${cab.model || "Vehicle"} · ${cab.carNumber || "No registration"}` : "No vehicle assigned"}
-            </p>
+                <div>
+                    <span className="fw-semibold me-2">Status:</span>
+                    <span className={`badge ${statusClass}`}>
+                        {availability}
+                    </span>
+                </div>
 
-            <p>
-                <b>Status:</b> {availability}
-            </p>
-
+            </div>
         </div>
-
-    )
-
+    );
 }
 
-export default DriverCard
+export default DriverCard;

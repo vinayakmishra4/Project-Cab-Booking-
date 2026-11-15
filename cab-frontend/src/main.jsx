@@ -4,7 +4,10 @@ import { Provider } from "react-redux";
 import App from "./App.jsx";
 import { store } from "./redux/store";
 
-// Keep the existing application styles unchanged.
+// Bootstrap CSS
+import "bootstrap/dist/css/bootstrap.min.css";
+
+// Existing application CSS
 import "./styles/global.css";
 import "./index.css";
 
