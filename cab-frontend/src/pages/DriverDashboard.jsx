@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import api from "../services/api";
@@ -23,6 +24,7 @@ function DriverDashboard() {
     const [savingVehicle, setSavingVehicle] = useState(false);
     const [updatingDuty, setUpdatingDuty] = useState(false);
     const [vehicleForm, setVehicleForm] = useState({ model: "", carNumber: "", vehicleType: "" });
+
     const firstName = userName?.trim().split(/\s+/)[0]
         || (email || "").split("@")[0]?.split(/[._-]/)[0]
         || "Driver";
@@ -76,8 +78,14 @@ function DriverDashboard() {
         }
     }, [loadRides]);
 
-    useEffect(() => { loadDashboard(); }, [loadDashboard]);
-    useEffect(() => { loadProfile(); }, [loadProfile]);
+    useEffect(() => {
+        loadDashboard();
+    }, [loadDashboard]);
+
+    useEffect(() => {
+        loadProfile();
+    }, [loadProfile]);
+
     useEffect(() => {
         if (!cab) return undefined;
         const interval = window.setInterval(() => loadRides(true), 5000);
@@ -215,36 +223,61 @@ function DriverDashboard() {
         setError("");
         try {
             const response = await api.post(`/api/driver/${action}-ride/${ride.id}`);
-            setRides((current) => current.map((item) => item.id === ride.id ? response.data : item));
+            setRides((current) =>
+                current.map((item) => item.id === ride.id ? response.data : item)
+            );
         } catch (requestError) {
-            setError(requestError.response?.data?.message || requestError.response?.data || "The ride could not be updated.");
+            setError(
+                requestError.response?.data?.message ||
+                requestError.response?.data ||
+                "The ride could not be updated."
+            );
         } finally {
             setWorkingRide(null);
         }
     };
 
-    const activeRides = rides.filter((ride) => ["REQUESTED", "ACCEPTED", "STARTED"].includes(ride.status));
+    const activeRides = rides.filter((ride) =>
+        ["REQUESTED", "ACCEPTED", "STARTED"].includes(ride.status)
+    );
     const completedRides = rides.filter((ride) => ride.status === "COMPLETED");
-    const earnings = completedRides.reduce((total, ride) => total + (Number(ride.fare) || 0), 0);
+    const earnings = completedRides.reduce(
+        (total, ride) => total + (Number(ride.fare) || 0),
+        0
+    );
 
     return (
         <div className="driver-portal">
             <aside className="driver-sidebar">
-                <a className="portal-side-brand" href="/driver/dashboard" aria-label="GoCab driver dashboard"><span className="brand-mark portal-brand-mark">M</span><span className="brand-copy"><span className="brand-word">Go<span>Cab</span></span></span><small>DRIVER</small></a>
+                <a className="portal-side-brand" href="/driver/dashboard" aria-label="GoCab driver dashboard">
+                    <span className="brand-mark portal-brand-mark">M</span>
+                    <span className="brand-copy">
+                        <span className="brand-word">Go<span>Cab</span></span>
+                    </span>
+                    <small>DRIVER</small>
+                </a>
+
                 <button className="driver-profile" type="button" onClick={openProfile} aria-label="View driver account details">
                     <span className="driver-avatar">{driverName.charAt(0).toUpperCase()}</span>
-                    <span className="driver-profile-copy"><strong>{driverName}</strong><span>Driver account</span></span>
+                    <span className="driver-profile-copy">
+                        <strong>{driverName}</strong>
+                        <span>Driver account</span>
+                    </span>
                     <span className="driver-profile-action" aria-hidden="true">›</span>
                 </button>
+
                 <p className="side-nav-label">WORKSPACE</p>
                 <a className="driver-side-link active" href="/driver/dashboard"><span>◫</span> Dashboard</a>
                 <a className="driver-side-link" href="#assigned-trips"><span>↗</span> Assigned trips</a>
+
                 <div className="driver-sidebar-bottom">
                     <p>Drive safe. We’ve got your back.</p>
                     <button className="sidebar-signout" type="button" onClick={() => {
                         dispatch(clearAuth());
                         window.location.assign("/");
-                    }}>↪ <span>Sign out</span></button>
+                    }}>
+                        ↪ <span>Sign out</span>
+                    </button>
                 </div>
             </aside>
 
@@ -256,29 +289,41 @@ function DriverDashboard() {
                     </div>
                     <span>{email}</span>
                 </header>
+
                 <div className="driver-content">
                     <div className="dashboard-welcome">
                         <div>
                             <p className="eyebrow">YOUR DRIVER DASHBOARD</p>
                             <h1>Welcome back, {driverName.split(/\s+/)[0]}.</h1>
-                            <p className="welcome-caption">{cab?.online
-                                ? "You’re on duty. New ride requests appear here automatically."
-                                : "Go on duty to receive new ride requests."}</p>
+                            <p className="welcome-caption">
+                                {cab?.online
+                                    ? "You’re on duty. New ride requests appear here automatically."
+                                    : "Go on duty to receive new ride requests."}
+                            </p>
                         </div>
-                        <button className="refresh-button" type="button" onClick={loadDashboard} disabled={loading || vehicleLoading}>↻ Refresh</button>
+                        <button className="refresh-button" type="button" onClick={loadDashboard} disabled={loading || vehicleLoading}>
+                            ↻ Refresh
+                        </button>
                     </div>
 
                     {error && <p className="dashboard-message" role="alert">{String(error)}</p>}
 
                     {vehicleLoading ? (
-                        <section className="dashboard-card vehicle-card"><p className="empty-state">Loading your car details…</p></section>
+                        <section className="dashboard-card vehicle-card">
+                            <p className="empty-state">Loading your car details…</p>
+                        </section>
                     ) : !cab ? (
                         <section className="dashboard-card vehicle-card">
                             <div className="card-heading">
-                                <div><p className="eyebrow">FIRST-TIME SETUP</p><h2>Register your car</h2></div>
+                                <div>
+                                    <p className="eyebrow">FIRST-TIME SETUP</p>
+                                    <h2>Register your car</h2>
+                                </div>
                                 <span className="vehicle-badge">Required</span>
                             </div>
-                            <p className="vehicle-description">Add the car you’ll use for GoCab trips. Your assigned-trip dashboard will be ready as soon as it’s registered.</p>
+                            <p className="vehicle-description">
+                                Add the car you’ll use for GoCab trips. Your assigned-trip dashboard will be ready as soon as it’s registered.
+                            </p>
                             <form className="vehicle-form" onSubmit={registerVehicle}>
                                 <label>
                                     Car model
@@ -324,7 +369,10 @@ function DriverDashboard() {
                     ) : (
                         <section className="dashboard-card vehicle-card">
                             <div className="card-heading">
-                                <div><p className="eyebrow">YOUR REGISTERED CAR</p><h2>{cab.model}</h2></div>
+                                <div>
+                                    <p className="eyebrow">YOUR REGISTERED CAR</p>
+                                    <h2>{cab.model}</h2>
+                                </div>
                                 <span className={`vehicle-badge ${cab.online ? "vehicle-badge-online" : ""}`}>
                                     <span className="vehicle-duty-dot" aria-hidden="true"></span>
                                     {cab.online ? "On duty" : "Off duty"}
@@ -340,7 +388,12 @@ function DriverDashboard() {
                                     : "Go on duty and share your location to become available for trips."}
                             </p>
                             <div className="vehicle-duty-actions">
-                                <button className={`vehicle-location-button ${cab.online ? "vehicle-refresh-button" : "vehicle-on-duty-button"}`} type="button" onClick={shareLocation} disabled={updatingDuty}>
+                                <button
+                                    className={`vehicle-location-button ${cab.online ? "vehicle-refresh-button" : "vehicle-on-duty-button"}`}
+                                    type="button"
+                                    onClick={shareLocation}
+                                    disabled={updatingDuty}
+                                >
                                     {updatingDuty ? "Updating…" : cab.online ? "Refresh location" : "Go on duty"}
                                 </button>
                                 {cab.online && (
@@ -352,74 +405,160 @@ function DriverDashboard() {
                         </section>
                     )}
 
-                    {!vehicleLoading && cab && <>
-                    <section className="driver-stats">
-                        <article className="driver-stat-card driver-stat-dark"><span>ACTIVE TRIPS</span><strong>{loading ? "—" : activeRides.length}</strong><small>Assigned to you</small><b aria-hidden="true">↗</b></article>
-                        <article className="driver-stat-card"><span>COMPLETED</span><strong>{loading ? "—" : completedRides.length}</strong><small>All-time completed trips</small><b aria-hidden="true">✓</b></article>
-                        <article className="driver-stat-card"><span>TRIP EARNINGS</span><strong>{loading ? "—" : `₹${earnings.toLocaleString("en-IN")}`}</strong><small>From completed trips</small><b aria-hidden="true">₹</b></article>
-                    </section>
+                    {!vehicleLoading && cab && (
+                        <>
+                            <section className="driver-stats">
+                                <article className="driver-stat-card driver-stat-dark">
+                                    <span>ACTIVE TRIPS</span>
+                                    <strong>{loading ? "—" : activeRides.length}</strong>
+                                    <small>Assigned to you</small>
+                                    <b aria-hidden="true">↗</b>
+                                </article>
+                                <article className="driver-stat-card">
+                                    <span>COMPLETED</span>
+                                    <strong>{loading ? "—" : completedRides.length}</strong>
+                                    <small>All-time completed trips</small>
+                                    <b aria-hidden="true">✓</b>
+                                </article>
+                                <article className="driver-stat-card">
+                                    <span>TRIP EARNINGS</span>
+                                    <strong>{loading ? "—" : `₹${earnings.toLocaleString("en-IN")}`}</strong>
+                                    <small>From completed trips</small>
+                                    <b aria-hidden="true">₹</b>
+                                </article>
+                            </section>
 
-                    <section id="assigned-trips" className="dashboard-card driver-trips-card">
-                        <div className="card-heading">
-                            <div><p className="eyebrow">ON THE ROAD</p><h2>Your assigned trips</h2></div>
-                            <span className="trip-count">{activeRides.filter((ride) => ride.status === "REQUESTED").length} requests · {activeRides.length} active</span>
-                        </div>
-                        {loading || refreshingRides ? <p className="empty-state">{loading ? "Loading assigned trips…" : "Checking for new ride requests…"}</p> : activeRides.length ? (
-                            <div className="driver-trip-list">
-                                {activeRides.map((ride) => (
-                                    <article className="driver-trip" key={ride.id}>
-                                        <div className="trip-heading">
-                                            <div><span className="trip-reference">GOCAB RIDE</span><h3>Trip #{ride.id}</h3></div>
-                                            <span className={`trip-status status-${ride.status?.toLowerCase()}`}>{ride.status?.replace("_", " ")}</span>
-                                        </div>
-                                        <div className="trip-route">
-                                            <span className="route-marker pickup-marker"></span>
-                                            <div><small>PICKUP</small><strong>{ride.pickupLat}, {ride.pickupLng}</strong></div>
-                                            <span className="route-stem"></span>
-                                            <span className="route-marker drop-marker"></span>
-                                            <div><small>DROP-OFF</small><strong>{ride.dropLat}, {ride.dropLng}</strong></div>
-                                        </div>
-                                        <div className="trip-footer">
-                                            <span>Fare <strong>{ride.fare == null ? "Pending" : `₹${ride.fare}`}</strong></span>
-                                            {ride.status === "REQUESTED" && (
-                                                <button type="button" disabled={workingRide === ride.id} onClick={() => updateRide(ride, "accept")}>
-                                                    {workingRide === ride.id ? "Updating…" : "Accept trip →"}
-                                                </button>
-                                            )}
-                                            {ride.status === "ACCEPTED" && (
-                                                <button type="button" disabled={workingRide === ride.id} onClick={() => updateRide(ride, "complete")}>
-                                                    {workingRide === ride.id ? "Updating…" : "Complete trip →"}
-                                                </button>
-                                            )}
-                                            {ride.status === "STARTED" && <span className="trip-live-label"><span className="status-dot"></span> Trip in progress</span>}
-                                        </div>
-                                    </article>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="empty-state">
-                                <span className="empty-state-icon">↗</span>
-                                <strong>You’re all caught up.</strong>
-                                <p>New assigned trips will show up here.</p>
-                            </div>
-                        )}
-                    </section>
-                    </>}
+                            <section id="assigned-trips" className="dashboard-card driver-trips-card">
+                                <div className="card-heading">
+                                    <div>
+                                        <p className="eyebrow">ON THE ROAD</p>
+                                        <h2>Your assigned trips</h2>
+                                    </div>
+                                    <span className="trip-count">
+                                        {activeRides.filter((ride) => ride.status === "REQUESTED").length} requests · {activeRides.length} active
+                                    </span>
+                                </div>
+
+                                {loading || refreshingRides ? (
+                                    <p className="empty-state">
+                                        {loading ? "Loading assigned trips…" : "Checking for new ride requests…"}
+                                    </p>
+                                ) : activeRides.length ? (
+                                    <div className="driver-trip-list">
+                                        {activeRides.map((ride) => (
+                                            <article className="driver-trip" key={ride.id}>
+                                                <div className="trip-heading">
+                                                    <div>
+                                                        <span className="trip-reference">GOCAB RIDE</span>
+                                                        <h3>Trip #{ride.id}</h3>
+                                                    </div>
+                                                    <span className={`trip-status status-${ride.status?.toLowerCase()}`}>
+                                                        {ride.status?.replace("_", " ")}
+                                                    </span>
+                                                </div>
+
+                                                <div className="trip-route">
+                                                    <span className="route-marker pickup-marker"></span>
+                                                    <div>
+                                                        <small>PICKUP</small>
+                                                        <strong>{ride.pickupLat}, {ride.pickupLng}</strong>
+                                                    </div>
+                                                    <span className="route-stem"></span>
+                                                    <span className="route-marker drop-marker"></span>
+                                                    <div>
+                                                        <small>DROP-OFF</small>
+                                                        <strong>{ride.dropLat}, {ride.dropLng}</strong>
+                                                    </div>
+                                                </div>
+
+                                                <div className="trip-footer">
+                                                    <span>
+                                                        Fare <strong>{ride.fare == null ? "Pending" : `₹${ride.fare}`}</strong>
+                                                    </span>
+
+                                                    {ride.status === "REQUESTED" && (
+                                                        <button
+                                                            type="button"
+                                                            disabled={workingRide === ride.id}
+                                                            onClick={() => updateRide(ride, "accept")}
+                                                        >
+                                                            {workingRide === ride.id ? "Accepting…" : "Accept trip →"}
+                                                        </button>
+                                                    )}
+
+                                                    {ride.status === "ACCEPTED" && (
+                                                        <button
+                                                            type="button"
+                                                            disabled={workingRide === ride.id}
+                                                            onClick={() => updateRide(ride, "start")}
+                                                        >
+                                                            {workingRide === ride.id ? "Starting…" : "Start trip →"}
+                                                        </button>
+                                                    )}
+
+                                                    {ride.status === "STARTED" && (
+                                                        <>
+                                                            <span className="trip-live-label">
+                                                                <span className="status-dot"></span> Trip in progress
+                                                            </span>
+                                                            <button
+                                                                type="button"
+                                                                disabled={workingRide === ride.id}
+                                                                onClick={() => updateRide(ride, "complete")}
+                                                            >
+                                                                {workingRide === ride.id ? "Completing…" : "Complete trip →"}
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </article>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="empty-state">
+                                        <span className="empty-state-icon">↗</span>
+                                        <strong>You’re all caught up.</strong>
+                                        <p>New assigned trips will show up here.</p>
+                                    </div>
+                                )}
+                            </section>
+                        </>
+                    )}
                 </div>
             </main>
+
             {profileOpen && (
-                <div className="profile-modal-backdrop" onMouseDown={(event) => {
-                    if (event.target === event.currentTarget && !savingProfile && !savingVehicle) setProfileOpen(false);
-                }}>
+                <div
+                    className="profile-modal-backdrop"
+                    onMouseDown={(event) => {
+                        if (
+                            event.target === event.currentTarget &&
+                            !savingProfile &&
+                            !savingVehicle
+                        ) {
+                            setProfileOpen(false);
+                        }
+                    }}
+                >
                     <section className="profile-modal" role="dialog" aria-modal="true" aria-labelledby="driver-profile-title">
                         <div className="profile-modal-heading">
                             <div>
                                 <p className="eyebrow">DRIVER ACCOUNT</p>
-                                <h2 id="driver-profile-title">{editingProfile || editingVehicle ? "Update your details" : "Your account details"}</h2>
+                                <h2>{editingProfile || editingVehicle ? "Update your details" : "Your account details"}</h2>
                             </div>
-                            <button className="profile-close-button" type="button" aria-label="Close account details" onClick={() => setProfileOpen(false)} disabled={savingProfile || savingVehicle}>×</button>
+                            <button
+                                className="profile-close-button"
+                                type="button"
+                                aria-label="Close account details"
+                                onClick={() => setProfileOpen(false)}
+                                disabled={savingProfile || savingVehicle}
+                            >
+                                ×
+                            </button>
                         </div>
+
                         {profileError && <p className="dashboard-message" role="alert">{String(profileError)}</p>}
+
                         {!profile || vehicleLoading ? (
                             <p className="empty-state">Loading your account details…</p>
                         ) : editingVehicle ? (
@@ -460,8 +599,12 @@ function DriverDashboard() {
                                     </select>
                                 </label>
                                 <div className="profile-modal-actions">
-                                    <button className="profile-secondary-button" type="button" onClick={() => setEditingVehicle(false)} disabled={savingVehicle}>Cancel</button>
-                                    <button className="profile-primary-button" type="submit" disabled={savingVehicle}>{savingVehicle ? "Saving…" : "Save car details"}</button>
+                                    <button className="profile-secondary-button" type="button" onClick={() => setEditingVehicle(false)} disabled={savingVehicle}>
+                                        Cancel
+                                    </button>
+                                    <button className="profile-primary-button" type="submit" disabled={savingVehicle}>
+                                        {savingVehicle ? "Saving…" : "Save car details"}
+                                    </button>
                                 </div>
                             </form>
                         ) : editingProfile ? (
@@ -499,8 +642,12 @@ function DriverDashboard() {
                                     />
                                 </label>
                                 <div className="profile-modal-actions">
-                                    <button className="profile-secondary-button" type="button" onClick={() => setEditingProfile(false)} disabled={savingProfile}>Cancel</button>
-                                    <button className="profile-primary-button" type="submit" disabled={savingProfile}>{savingProfile ? "Saving…" : "Save changes"}</button>
+                                    <button className="profile-secondary-button" type="button" onClick={() => setEditingProfile(false)} disabled={savingProfile}>
+                                        Cancel
+                                    </button>
+                                    <button className="profile-primary-button" type="submit" disabled={savingProfile}>
+                                        {savingProfile ? "Saving…" : "Save changes"}
+                                    </button>
                                 </div>
                             </form>
                         ) : (
@@ -512,6 +659,7 @@ function DriverDashboard() {
                                     <div><span>Driver ID</span><strong>{profile.driverId}</strong></div>
                                     <div><span>Driving licence</span><strong>{profile.licenseNumber}</strong></div>
                                 </div>
+
                                 <div className="profile-vehicle-section">
                                     <p className="eyebrow profile-section-label">CAR DETAILS</p>
                                     {cab ? (
@@ -521,19 +669,32 @@ function DriverDashboard() {
                                             <div><span>Category</span><strong>{cab.vehicleType || "Car"}</strong></div>
                                         </div>
                                     ) : (
-                                        <p className="profile-no-vehicle">No car registered yet. Register your car from the dashboard to enable trip assignments.</p>
+                                        <p className="profile-no-vehicle">
+                                            No car registered yet. Register your car from the dashboard to enable trip assignments.
+                                        </p>
                                     )}
                                 </div>
+
                                 <div className="profile-modal-actions profile-modal-actions-split">
-                                    <button className="profile-secondary-button" type="button" onClick={() => setEditingProfile(true)}>Edit account</button>
-                                    {cab && <button className="profile-primary-button" type="button" onClick={() => {
-                                        setVehicleForm({
-                                            model: cab.model || "",
-                                            carNumber: cab.carNumber || "",
-                                            vehicleType: cab.vehicleType || ""
-                                        });
-                                        setEditingVehicle(true);
-                                    }}>Edit car</button>}
+                                    <button className="profile-secondary-button" type="button" onClick={() => setEditingProfile(true)}>
+                                        Edit account
+                                    </button>
+                                    {cab && (
+                                        <button
+                                            className="profile-primary-button"
+                                            type="button"
+                                            onClick={() => {
+                                                setVehicleForm({
+                                                    model: cab.model || "",
+                                                    carNumber: cab.carNumber || "",
+                                                    vehicleType: cab.vehicleType || ""
+                                                });
+                                                setEditingVehicle(true);
+                                            }}
+                                        >
+                                            Edit car
+                                        </button>
+                                    )}
                                 </div>
                             </>
                         )}
