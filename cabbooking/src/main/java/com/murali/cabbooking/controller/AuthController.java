@@ -7,16 +7,13 @@ import com.murali.cabbooking.repository.EmployeeRepository;
 import com.murali.cabbooking.repository.UserRepository;
 import com.murali.cabbooking.security.JwtUtil;
 import com.murali.cabbooking.service.PasswordChangeService;
-import com.murali.cabbooking.service.UserSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -39,9 +36,6 @@ public class AuthController {
 
     @Autowired
     private PasswordChangeService passwordChangeService;
-
-    @Autowired
-    private UserSessionService userSessionService;
 
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
@@ -162,8 +156,7 @@ public class AuthController {
         if (portal.equals("EMPLOYEE")) {
             Employee employee = employeeRepository.findByEmail(email).orElse(null);
             if (employee != null && passwordEncoder.matches(request.getPassword(), employee.getPassword())) {
-                UserSession session = userSessionService.createSession(employee.getEmail(), Role.USER.name(), 30);
-                String token = jwtUtil.generateToken(employee.getEmail(), Role.USER.name(), session.getId());
+                String token = jwtUtil.generateToken(employee.getEmail(), Role.USER.name());
                 return ResponseEntity.ok(new AuthResponse(token));
             }
 
@@ -172,8 +165,7 @@ public class AuthController {
                     .orElse(null);
             if (legacyEmployee != null && legacyEmployee.isEnabled()
                     && passwordEncoder.matches(request.getPassword(), legacyEmployee.getPassword())) {
-                UserSession session = userSessionService.createSession(legacyEmployee.getEmail(), Role.USER.name(), 30);
-                String token = jwtUtil.generateToken(legacyEmployee.getEmail(), Role.USER.name(), session.getId());
+                String token = jwtUtil.generateToken(legacyEmployee.getEmail(), Role.USER.name());
                 return ResponseEntity.ok(new AuthResponse(token));
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -210,9 +202,8 @@ public class AuthController {
                 admin.setPassword(passwordEncoder.encode(request.getPassword()));
                 adminRepository.save(admin);
             }
-            UserSession session = userSessionService.createSession(admin.getEmail(), Role.ADMIN.name(), 15);
             return ResponseEntity.ok(new AuthResponse(
-                    jwtUtil.generateToken(admin.getEmail(), Role.ADMIN.name(), session.getId())
+                    jwtUtil.generateToken(admin.getEmail(), Role.ADMIN.name())
             ));
         }
 
@@ -235,46 +226,10 @@ public class AuthController {
                     .body("This account does not have access to the selected portal.");
         }
 
-        UserSession session = userSessionService.createSession(user.getEmail(), user.getRole().name(), 30);
         String token = jwtUtil.generateToken(
                 user.getEmail(),
-                user.getRole().name(),
-                session.getId()
+                user.getRole().name()
         );
         return ResponseEntity.ok(new AuthResponse(token));
-    }
-
-    @PostMapping("/activity")
-    public ResponseEntity<?> recordActivity(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing token.");
-        }
-        try {
-            String token = header.substring(7);
-            UUID sessionId = jwtUtil.extractSessionId(token);
-            if (sessionId == null || !userSessionService.updateActivity(sessionId)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired.");
-            }
-            return ResponseEntity.ok(java.util.Map.of("status", "active"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid session.");
-        }
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            try {
-                String token = header.substring(7);
-                UUID sessionId = jwtUtil.extractSessionId(token);
-                if (sessionId != null) {
-                    userSessionService.revokeSession(sessionId);
-                }
-            } catch (Exception ignored) {
-            }
-        }
-        return ResponseEntity.ok(java.util.Map.of("message", "Logged out successfully."));
     }
 }
