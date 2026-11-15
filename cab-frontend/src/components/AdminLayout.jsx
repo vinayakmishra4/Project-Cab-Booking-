@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
-import api from "../services/api";
-
-const emptyDashboard = { totalBookings: 0, tripsInProgress: 0 };
+import { clearAuth } from "../redux/slices/authSlice";
+import { fetchAdminDashboard } from "../redux/slices/adminSlice";
 
 const workspaceLinks = [
     { to: "/admin", label: "Overview", icon: "▦", end: true },
@@ -18,36 +18,23 @@ const managementLinks = [
 ];
 
 function AdminLayout() {
-    const [dashboard, setDashboard] = useState(emptyDashboard);
-    const [serviceStatus, setServiceStatus] = useState("checking");
-    const [error, setError] = useState("");
+    const dispatch = useDispatch();
+    const { userEmail: email } = useSelector((state) => state.auth);
+    const { dashboard, serviceStatus, error } = useSelector((state) => state.admin);
     const location = useLocation();
-    const email = localStorage.getItem("userEmail") || "";
-
-    const refreshCounts = useCallback(async () => {
-        try {
-            const response = await api.get("/api/admin/dashboard");
-            setDashboard({ ...emptyDashboard, ...response.data });
-            setServiceStatus("connected");
-            setError("");
-        } catch {
-            setServiceStatus("unavailable");
-            setError("Admin service is unavailable. Some navigation counts may be out of date.");
-        }
-    }, []);
 
     useEffect(() => {
-        refreshCounts();
-        const interval = window.setInterval(refreshCounts, 30000);
+        dispatch(fetchAdminDashboard());
+        const interval = window.setInterval(() => {
+            dispatch(fetchAdminDashboard());
+        }, 30000);
         return () => window.clearInterval(interval);
-    }, [refreshCounts]);
+    }, [dispatch]);
 
     const pageTitle = [...workspaceLinks, ...managementLinks]
         .find((item) => item.to === location.pathname)?.label || "Overview";
     const signOut = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("portal");
-        localStorage.removeItem("userEmail");
+        dispatch(clearAuth());
         window.location.assign("/");
     };
 

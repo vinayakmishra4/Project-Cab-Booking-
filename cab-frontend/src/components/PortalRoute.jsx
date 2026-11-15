@@ -1,11 +1,12 @@
-import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Navigate, useLocation } from "react-router-dom";
 
 function PortalRoute({ portal, children }) {
-    const hasSession = Boolean(localStorage.getItem("token"));
-    const hasPortalAccess = localStorage.getItem("portal") === portal;
+    const location = useLocation();
+    const { token, portal: userPortal, isAuthenticated } = useSelector((state) => state.auth);
 
-    if (!hasSession || !hasPortalAccess) {
-        return <Navigate to="/" replace />;
+    if (!isAuthenticated || !token || userPortal !== portal) {
+        return <Navigate to="/" replace state={{ from: location }} />;
     }
 
     return children;

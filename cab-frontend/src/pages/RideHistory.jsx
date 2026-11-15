@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { getRideHistory } from "../services/rideService";
+import { fetchRideHistory } from "../redux/slices/rideSlice";
 
 const activeStatuses = ["REQUESTED", "ACCEPTED", "STARTED"];
 
@@ -21,45 +22,16 @@ function formatRideDate(value) {
     });
 }
 
-function getErrorMessage(error) {
-    const responseData = error.response?.data;
-    if (typeof responseData === "string" && responseData.trim()) return responseData;
-    if (responseData && typeof responseData === "object") {
-        const message = responseData.message || responseData.detail || responseData.error;
-        if (typeof message === "string" && message.trim()) return message;
-    }
-    if (error.response?.status === 401 || error.response?.status === 403) {
-        return "Your session has expired. Sign in again to view your bookings.";
-    }
-    if (error.response?.status) return error.message || "Could not load your bookings.";
-    return "Could not connect to GoCab. Check that the backend is running and try again.";
-}
 
 function RideHistory() {
-    const [rides, setRides] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    const dispatch = useDispatch();
+    const { token } = useSelector((state) => state.auth);
+    const { items: rides, loading, error } = useSelector((state) => state.rides);
     const navigate = useNavigate();
 
-    const loadRides = useCallback(async () => {
-        setLoading(true);
-        setError("");
-        try {
-            const response = await getRideHistory(localStorage.getItem("token"));
-            if (!Array.isArray(response.data)) {
-                throw new Error("The server returned an invalid booking list.");
-            }
-            setRides(response.data);
-        } catch (requestError) {
-            setError(getErrorMessage(requestError));
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
     useEffect(() => {
-        loadRides();
-    }, [loadRides]);
+        if (token) dispatch(fetchRideHistory(token));
+    }, [dispatch, token]);
 
     const sortedRides = useMemo(() => [...rides].sort((first, second) => {
         const firstDate = first.createdAt ? new Date(first.createdAt).getTime() : Number(first.id) || 0;

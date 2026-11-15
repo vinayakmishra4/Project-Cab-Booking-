@@ -1,12 +1,20 @@
-
 import { createSlice } from "@reduxjs/toolkit";
 
+const readStorage = (key) => {
+    if (typeof window === "undefined") return null;
+    try {
+        return window.localStorage.getItem(key);
+    } catch {
+        return null;
+    }
+};
+
 const initialState = {
-    token: localStorage.getItem("token"),
-    portal: localStorage.getItem("portal"),
-    userEmail: localStorage.getItem("userEmail"),
-    userName: localStorage.getItem("userName"),
-    isAuthenticated: !!localStorage.getItem("token")
+    token: readStorage("token"),
+    portal: readStorage("portal"),
+    userEmail: readStorage("userEmail"),
+    userName: readStorage("userName"),
+    isAuthenticated: Boolean(readStorage("token"))
 };
 
 const authSlice = createSlice({
@@ -14,15 +22,19 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         setAuth: (state, action) => {
-            const { token, portal, userEmail, userName } = action.payload;
-
-            state.token = token;
-            state.portal = portal;
-            state.userEmail = userEmail;
+            const { token, portal, userEmail, userName } = action.payload || {};
+            state.token = token || null;
+            state.portal = portal || null;
+            state.userEmail = userEmail || null;
             state.userName = userName || null;
-            state.isAuthenticated = !!token;
+            state.isAuthenticated = Boolean(token);
         },
-
+        setUserEmail: (state, action) => {
+            state.userEmail = action.payload || null;
+        },
+        setUserName: (state, action) => {
+            state.userName = action.payload || null;
+        },
         clearAuth: (state) => {
             state.token = null;
             state.portal = null;
@@ -33,6 +45,5 @@ const authSlice = createSlice({
     }
 });
 
-export const { setAuth, clearAuth } = authSlice.actions;
-
+export const { setAuth, setUserEmail, setUserName, clearAuth } = authSlice.actions;
 export default authSlice.reducer;

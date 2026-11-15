@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import MapComponent from "../components/MapComponent";
 import Navbar from "../components/Navbar";
-import { estimateRide, getRideHistory } from "../services/rideService";
+import { estimateRide } from "../services/rideService";
+import { fetchRideHistory } from "../redux/slices/rideSlice";
 
 const activeStatuses = ["REQUESTED", "ACCEPTED", "STARTED"];
 const tripSteps = [
@@ -39,9 +41,9 @@ function formatEstimatedTime(minutes) {
 
 function LiveTrack() {
     const [searchParams] = useSearchParams();
-    const [rides, setRides] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    const dispatch = useDispatch();
+    const { token } = useSelector((state) => state.auth);
+    const { items: rides, loading, error } = useSelector((state) => state.rides);
     const [routeCoordinates, setRouteCoordinates] = useState(null);
     const [routeError, setRouteError] = useState("");
     const [lastUpdated, setLastUpdated] = useState(null);
@@ -49,39 +51,21 @@ function LiveTrack() {
     const requestedRideId = searchParams.get("rideId");
 
     useEffect(() => {
-        let mounted = true;
-        let intervalId;
+        if (!token) return undefined;
 
-        const loadRides = async () => {
-            try {
-                const response = await getRideHistory(localStorage.getItem("token"));
-                if (!Array.isArray(response.data)) {
-                    throw new Error("The server returned an invalid ride list.");
-                }
-                if (mounted) {
-                    setRides(response.data);
-                    setError("");
-                    setLastUpdated(new Date());
-                }
-            } catch (requestError) {
-                if (mounted) {
-                    setError(requestError.response?.data?.message
-                        || requestError.message
-                        || "Could not load ride details. Please refresh the page.");
-                }
-            } finally {
-                if (mounted) setLoading(false);
-            }
+        const loadRides = () => {
+            dispatch(fetchRideHistory(token))
+                .unwrap()
+                .then(() => setLastUpdated(new Date()))
+                .catch(() => {
+                    // The Redux slice stores the request error for the page.
+                });
         };
 
         loadRides();
-        intervalId = window.setInterval(loadRides, 15000);
-
-        return () => {
-            mounted = false;
-            window.clearInterval(intervalId);
-        };
-    }, []);
+        const intervalId = window.setInterval(loadRides, 15000);
+        return () => window.clearInterval(intervalId);
+    }, [dispatch, token]);
 
     const ride = useMemo(() => {
         if (requestedRideId) {

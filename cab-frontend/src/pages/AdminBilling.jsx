@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import AdminModal from "../components/AdminModal";
 import AdminPageHeader from "../components/AdminPageHeader";
 import AdminPagination from "../components/AdminPagination";
@@ -7,6 +8,7 @@ import { downloadCsv, fetchRides, formatCurrency, formatDate } from "../services
 const pageSize = 10;
 
 function AdminBilling() {
+    const { userEmail } = useSelector((state) => state.auth);
     const [rides, setRides] = useState([]);
     const [manualCharges, setManualCharges] = useState({});
     const [chargesLoaded, setChargesLoaded] = useState(false);
@@ -20,7 +22,7 @@ function AdminBilling() {
     const [chargeDescription, setChargeDescription] = useState("");
     const [chargeAmount, setChargeAmount] = useState("");
     const [chargeError, setChargeError] = useState("");
-    const storageKey = `mygocab-billing-charges:${localStorage.getItem("userEmail") || "admin"}`;
+    const storageKey = `mygocab-billing-charges:${userEmail || "admin"}`;
 
     const loadRides = async () => {
         setLoading(true);

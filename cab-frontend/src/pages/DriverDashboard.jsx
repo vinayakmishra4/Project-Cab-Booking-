@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import api from "../services/api";
+import { clearAuth } from "../redux/slices/authSlice";
 
 function DriverDashboard() {
+    const dispatch = useDispatch();
+    const { userEmail: email, userName } = useSelector((state) => state.auth);
     const [rides, setRides] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshingRides, setRefreshingRides] = useState(false);
@@ -19,9 +23,10 @@ function DriverDashboard() {
     const [savingVehicle, setSavingVehicle] = useState(false);
     const [updatingDuty, setUpdatingDuty] = useState(false);
     const [vehicleForm, setVehicleForm] = useState({ model: "", carNumber: "", vehicleType: "" });
-    const email = localStorage.getItem("userEmail") || "";
-    const firstName = email.split("@")[0]?.split(/[._-]/)[0] || "Driver";
-    const driverName = profile?.name || firstName;
+    const firstName = userName?.trim().split(/\s+/)[0]
+        || (email || "").split("@")[0]?.split(/[._-]/)[0]
+        || "Driver";
+    const driverName = profile?.name || userName || firstName;
 
     const loadProfile = useCallback(async () => {
         try {
@@ -237,9 +242,7 @@ function DriverDashboard() {
                 <div className="driver-sidebar-bottom">
                     <p>Drive safe. We’ve got your back.</p>
                     <button className="sidebar-signout" type="button" onClick={() => {
-                        localStorage.removeItem("token");
-                        localStorage.removeItem("portal");
-                        localStorage.removeItem("userEmail");
+                        dispatch(clearAuth());
                         window.location.assign("/");
                     }}>↪ <span>Sign out</span></button>
                 </div>

@@ -1,50 +1,37 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import LocationSearchField from "../components/LocationSearchField";
-import { getRideHistory } from "../services/rideService";
+import { clearAuth } from "../redux/slices/authSlice";
+import { fetchRideHistory } from "../redux/slices/rideSlice";
 
 const activeStatuses = ["REQUESTED", "ACCEPTED", "STARTED"];
 
 function Dashboard() {
-    const [rides, setRides] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    const dispatch = useDispatch();
+    const { token, userEmail, userName } = useSelector((state) => state.auth);
+    const { items: rides, loading, error } = useSelector((state) => state.rides);
     const [pickup, setPickup] = useState("");
     const [dropoff, setDropoff] = useState("");
     const [pickupLocation, setPickupLocation] = useState(null);
     const [dropoffLocation, setDropoffLocation] = useState(null);
     const [bookingError, setBookingError] = useState("");
     const navigate = useNavigate();
-    const email = localStorage.getItem("userEmail") || "";
-    const storedName = localStorage.getItem("userName");
+    const email = userEmail || "";
+    const storedName = userName;
     const firstName = storedName?.trim().split(/\s+/)[0]
         || email.split("@")[0]?.split(/[._-]/)[0]
         || "there";
     const initials = firstName.slice(0, 1).toUpperCase();
 
     useEffect(() => {
-        let mounted = true;
-        getRideHistory(localStorage.getItem("token"))
-            .then((response) => {
-                if (mounted) setRides(Array.isArray(response.data) ? response.data : []);
-            })
-            .catch(() => {
-                if (mounted) setError("Your bookings are temporarily unavailable. Please try again later.");
-            })
-            .finally(() => {
-                if (mounted) setLoading(false);
-            });
-
-        return () => { mounted = false; };
-    }, []);
+        if (token) dispatch(fetchRideHistory(token));
+    }, [dispatch, token]);
 
     const upcomingRide = rides.find((ride) => activeStatuses.includes(ride.status));
     const recentRides = [...rides].sort((first, second) => Number(second.id) - Number(first.id)).slice(0, 4);
     const signOut = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("portal");
-        localStorage.removeItem("userEmail");
-        localStorage.removeItem("userName");
+        dispatch(clearAuth());
         navigate("/", { replace: true });
     };
 

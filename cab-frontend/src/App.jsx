@@ -20,12 +20,15 @@ import Payment from "./pages/Payment.jsx"
 import DriverDashboard from "./pages/DriverDashboard.jsx"
 import PortalRoute from "./components/PortalRoute.jsx"
 import SiteFooter from "./components/SiteFooter.jsx"
+import IdleSessionManager from "./components/IdleSessionManager.jsx"
 
 function App(){
 
     return(
 
         <BrowserRouter>
+
+            <IdleSessionManager />
 
             <Routes>
 

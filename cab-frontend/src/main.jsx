@@ -1,18 +1,17 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+import App from "./App.jsx";
+import { store } from "./redux/store";
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
+// Keep the existing application styles unchanged.
+import "./styles/global.css";
+import "./index.css";
 
-// Import global styles first
-import './styles/global.css';
-
-// Import additional styles
-import './index.css';
-
-ReactDOM.createRoot(
-  document.getElementById('root')
-).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+ReactDOM.createRoot(document.getElementById("root")).render(
+    <React.StrictMode>
+        <Provider store={store}>
+            <App />
+        </Provider>
+    </React.StrictMode>
 );

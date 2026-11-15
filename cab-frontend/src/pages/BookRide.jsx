@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useSelector } from "react-redux"
 import MapComponent from "../components/MapComponent"
 import LocationSearchField from "../components/LocationSearchField"
 import Navbar from "../components/Navbar"
@@ -18,6 +19,7 @@ function readBookingDraft() {
 
 function BookRide(){
 
+    const { token } = useSelector((state) => state.auth)
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const [recoveryDraft] = useState(readBookingDraft)
@@ -149,7 +151,7 @@ function BookRide(){
             return
         }
 
-        if (!localStorage.getItem("token")) {
+        if (!token) {
             setAuthRequired(true)
             setBookingError("Sign in with your employee account to send this ride request.")
             return
@@ -166,7 +168,7 @@ function BookRide(){
                 pickupAddress: pickupText,
                 dropoffAddress: dropText,
                 vehicleType: carType
-            })
+            }, token)
             const rideId = response.data?.id
             if (rideId == null) {
                 throw new Error("The ride was submitted, but the booking reference was not returned. Check your ride history before trying again.")

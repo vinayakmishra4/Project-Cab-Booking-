@@ -9,8 +9,6 @@ export const loginUser = async (data) => {
     const timeout = data.portal === "ADMIN" ? 120000 : 30000;
     const response = await api.post(`${API}/login`, data, { timeout });
 
-    localStorage.setItem("token", response.data.token);
-
     return response;
 
 };

@@ -14,7 +14,7 @@ export const estimateRide = (rideData) => api.get("/api/user/estimate-ride", {
    BOOK RIDE
 ================================ */
 
-export const bookRide = async (rideData, token = localStorage.getItem("token")) => {
+export const bookRide = async (rideData, token) => {
 
     if (!token) {
         throw new Error("User not authenticated");

@@ -1,4 +1,3 @@
-
 import axios from "axios";
 
 const hostname =
@@ -26,11 +25,20 @@ const api = axios.create({
     baseURL
 });
 
+let getAuthToken = () => null;
+
+// The Redux store registers the token selector after store creation.
+export const setAuthTokenProvider = (provider) => {
+    getAuthToken = typeof provider === "function" ? provider : () => null;
+};
+
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
 
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+    } else if (config.headers?.Authorization) {
+        delete config.headers.Authorization;
     }
 
     return config;

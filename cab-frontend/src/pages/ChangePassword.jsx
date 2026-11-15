@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { changePassword } from "../services/authService";
+import { setUserEmail } from "../redux/slices/authSlice";
 
 const portalTitles = {
     employee: "Employee",
@@ -13,8 +15,10 @@ function ChangePassword() {
     const portalTitle = portalTitles[portal.toLowerCase()];
     const location = useLocation();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const savedEmail = useSelector((state) => state.auth.userEmail);
     const [email, setEmail] = useState(
-        () => location.state?.email || localStorage.getItem("userEmail") || ""
+        () => location.state?.email || savedEmail || ""
     );
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -48,7 +52,7 @@ function ChangePassword() {
                 newPassword,
                 confirmPassword
             });
-            localStorage.setItem("userEmail", email.trim());
+            dispatch(setUserEmail(email.trim()));
             navigate("/", {
                 replace: true,
                 state: {

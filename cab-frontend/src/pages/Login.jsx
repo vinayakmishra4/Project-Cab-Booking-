@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { loginUser } from "../services/authService";
+import { setAuth } from "../redux/slices/authSlice";
 import api from "../services/api";
 
 const portals = [
@@ -13,9 +15,11 @@ function Login() {
 
     const navigate = useNavigate();
     const location = useLocation();
+    const dispatch = useDispatch();
+    const savedEmail = useSelector((state) => state.auth.userEmail);
     const apiUrl = api.defaults.baseURL || window.location.origin;
 
-    const [email,setEmail] = useState(() => location.state?.email || localStorage.getItem("userEmail") || "");
+    const [email,setEmail] = useState(() => location.state?.email || savedEmail || "");
     const [password,setPassword] = useState("");
     const [portal,setPortal] = useState(location.state?.portal || "EMPLOYEE");
     const [error,setError] = useState("");
@@ -28,14 +32,23 @@ function Login() {
 
         try {
 
-            await loginUser({
+            const response = await loginUser({
                 email: email.trim(),
                 password,
                 portal
             });
 
-            localStorage.setItem("portal", portal);
-            localStorage.setItem("userEmail", email.trim());
+            const userName = response.data?.userName
+                || response.data?.name
+                || response.data?.fullName
+                || null;
+
+            dispatch(setAuth({
+                token: response.data?.token,
+                portal,
+                userEmail: email.trim(),
+                userName
+            }));
             const destination = {
                 EMPLOYEE: "/dashboard",
                 DRIVER: "/driver/dashboard",
