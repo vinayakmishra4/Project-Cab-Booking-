@@ -1,9 +1,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
 import LocationSearchField from "../components/LocationSearchField";
 import { getRideHistory } from "../services/rideService";
 import { Client } from "@stomp/stompjs";
+import { clearAuth } from "../redux/slices/authSlice";
 
 const activeStatuses = ["REQUESTED", "ACCEPTED", "STARTED"];
 
@@ -18,12 +21,20 @@ function Dashboard() {
     const [bookingError, setBookingError] = useState("");
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    const email = localStorage.getItem("userEmail") || "";
-    const storedName = localStorage.getItem("userName");
+    // Read authentication details from Redux.
+    const { token, userEmail, userName } = useSelector(
+        (state) => state.auth
+    );
+
+    const email = userEmail || "";
+
+    // Read the user's name from Redux.
+    const storedName = userName || "";
 
     const firstName =
-        storedName?.trim().split(/\s+/)[0] ||
+        storedName.trim().split(/\s+/)[0] ||
         email.split("@")[0]?.split(/[._-]/)[0] ||
         "there";
 
@@ -54,66 +65,62 @@ function Dashboard() {
 
     // Initial load and instant ride-status updates through WebSocket.
     useEffect(() => {
-    // Load existing rides when the dashboard opens.
         loadRides();
 
-    const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("WebSocket connection skipped: JWT token not found.");
+            return;
+        }
 
-    if (!token) {
-        console.error("WebSocket connection skipped: JWT token not found.");
-        return;
-    }
+        const wsProtocol =
+            window.location.protocol === "https:" ? "wss:" : "ws:";
 
-    const wsProtocol =
-        window.location.protocol === "https:" ? "wss:" : "ws:";
+        const client = new Client({
+            brokerURL: `${wsProtocol}//${window.location.hostname}:8080/ws`,
 
-    const client = new Client({
-        brokerURL: `${wsProtocol}//${window.location.hostname}:8080/ws`,
+            connectHeaders: {
+                Authorization: `Bearer ${token}`,
+            },
 
-        connectHeaders: {
-            Authorization: `Bearer ${token}`,
-        },
+            reconnectDelay: 5000,
 
-        reconnectDelay: 5000,
+            heartbeatIncoming: 10000,
+            heartbeatOutgoing: 10000,
 
-        heartbeatIncoming: 10000,
-        heartbeatOutgoing: 10000,
+            onConnect: () => {
+                console.log("Employee ride notifications connected.");
 
-        onConnect: () => {
-            console.log("Employee ride notifications connected.");
+                client.subscribe("/user/queue/ride-updates", (message) => {
+                    try {
+                        const notification = JSON.parse(message.body);
 
-            client.subscribe("/user/queue/ride-updates", (message) => {
-                try {
-                    const notification = JSON.parse(message.body);
+                        console.log("Ride status update received:", notification);
 
-                    console.log("Ride status update received:", notification);
+                        loadRides(true);
+                    } catch (notificationError) {
+                        console.error(
+                            "Could not process ride notification:",
+                            notificationError
+                        );
+                    }
+                });
+            },
 
-                    // Immediately fetch the latest ride information.
-                    loadRides(true);
-                } catch (notificationError) {
-                    console.error(
-                        "Could not process ride notification:",
-                        notificationError
-                    );
-                }
-            });
-        },
+            onStompError: (frame) => {
+                console.error("WebSocket STOMP error:", frame.headers.message);
+            },
 
-        onStompError: (frame) => {
-            console.error("WebSocket STOMP error:", frame.headers.message);
-        },
+            onWebSocketError: (event) => {
+                console.error("WebSocket connection error:", event);
+            },
+        });
 
-        onWebSocketError: (event) => {
-            console.error("WebSocket connection error:", event);
-        },
-    });
+        client.activate();
 
-    client.activate();
-
-    return () => {
-        client.deactivate();
-    };
-}, [loadRides]);
+        return () => {
+            client.deactivate();
+        };
+    }, [loadRides, token]);
 
     const upcomingRide = rides.find((ride) =>
         activeStatuses.includes(ride.status)
@@ -123,11 +130,14 @@ function Dashboard() {
         .sort((first, second) => Number(second.id) - Number(first.id))
         .slice(0, 4);
 
+    // Logout and clear Redux authentication state.
     const signOut = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("portal");
         localStorage.removeItem("userEmail");
         localStorage.removeItem("userName");
+
+        dispatch(clearAuth());
 
         navigate("/", { replace: true });
     };

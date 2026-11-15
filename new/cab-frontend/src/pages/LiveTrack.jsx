@@ -1,5 +1,6 @@
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Client } from "@stomp/stompjs";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import MapComponent from "../components/MapComponent";
 import Navbar from "../components/Navbar";
@@ -97,47 +98,111 @@ function LiveTrack() {
     const navigate = useNavigate();
     const requestedRideId = searchParams.get("rideId");
 
-    // Load ride details every 15 seconds.
-    useEffect(() => {
-        let mounted = true;
+    // Load the latest ride information.
+    const loadRides = useCallback(async (silent = false) => {
+        try {
+            const response = await getRideHistory();
 
-        const loadRides = async () => {
-            try {
-                const response = await getRideHistory();
-
-                if (!Array.isArray(response.data)) {
-                    throw new Error("The server returned an invalid ride list.");
-                }
-
-                if (mounted) {
-                    setRides(response.data);
-                    setError("");
-                    setLastUpdated(new Date());
-                }
-            } catch (requestError) {
-                if (mounted) {
-                    setError(
-                        requestError.response?.data?.message ||
-                        requestError.message ||
-                        "Could not load ride details. Please refresh the page."
-                    );
-                }
-            } finally {
-                if (mounted) {
-                    setLoading(false);
-                }
+            if (!Array.isArray(response.data)) {
+                throw new Error("The server returned an invalid ride list.");
             }
-        };
 
+            setRides(response.data);
+            setError("");
+            setLastUpdated(new Date());
+        } catch (requestError) {
+            if (!silent) {
+                setError(
+                    requestError.response?.data?.message ||
+                    requestError.message ||
+                    "Could not load ride details. Please refresh the page."
+                );
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    // Initial load, WebSocket notifications and GPS backup refresh.
+    useEffect(() => {
         loadRides();
 
-        const intervalId = window.setInterval(loadRides, 15000);
+        // Backup refresh for driver GPS updates.
+        const intervalId = window.setInterval(() => {
+            loadRides(true);
+        }, 15000);
+
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            console.error(
+                "WebSocket connection skipped: JWT token not found."
+            );
+
+            return () => {
+                window.clearInterval(intervalId);
+            };
+        }
+
+        const wsProtocol =
+            window.location.protocol === "https:" ? "wss:" : "ws:";
+
+        const client = new Client({
+            brokerURL: `${wsProtocol}//${window.location.hostname}:8080/ws`,
+
+            connectHeaders: {
+                Authorization: `Bearer ${token}`,
+            },
+
+            reconnectDelay: 5000,
+            heartbeatIncoming: 10000,
+            heartbeatOutgoing: 10000,
+
+            onConnect: () => {
+                console.log("Live tracking WebSocket connected.");
+
+                client.subscribe(
+                    "/user/queue/ride-updates",
+                    (message) => {
+                        try {
+                            const notification = JSON.parse(message.body);
+
+                            console.log(
+                                "Live tracking update received:",
+                                notification
+                            );
+
+                            // Refresh ride, driver and cab details immediately.
+                            loadRides(true);
+                        } catch (notificationError) {
+                            console.error(
+                                "Could not process ride notification:",
+                                notificationError
+                            );
+                        }
+                    }
+                );
+            },
+
+            onStompError: (frame) => {
+                console.error(
+                    "WebSocket STOMP error:",
+                    frame.headers.message
+                );
+            },
+
+            onWebSocketError: (event) => {
+                console.error("WebSocket connection error:", event);
+            },
+        });
+
+        client.activate();
 
         return () => {
-            mounted = false;
             window.clearInterval(intervalId);
+            client.deactivate();
         };
-    }, []);
+    }, [loadRides]);
 
     // Select the requested ride.
     const ride = useMemo(() => {
@@ -523,14 +588,15 @@ function LiveTrack() {
 
                                     <p className="tracking-refresh-note">
                                         {lastUpdated
-                                            ? `Ride details refresh every 15 seconds · Updated ${lastUpdated.toLocaleTimeString(
+                                            ? `Ride details synced ${lastUpdated.toLocaleTimeString(
                                                 [],
                                                 {
                                                     hour: "2-digit",
-                                                    minute: "2-digit"
+                                                    minute: "2-digit",
+                                                    second: "2-digit"
                                                 }
-                                            )}`
-                                            : "Ride details refresh every 15 seconds"}
+                                            )} · Live status notifications enabled`
+                                            : "Connecting to live ride updates..."}
                                     </p>
                                 </section>
 

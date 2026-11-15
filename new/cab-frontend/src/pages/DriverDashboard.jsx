@@ -1,8 +1,14 @@
 
 import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import api from "../services/api";
+import { clearAuth } from "../redux/slices/authSlice";
 
 function DriverDashboard() {
+    const dispatch = useDispatch();
+    const { userEmail, userName } = useSelector((state) => state.auth);
+
     const [rides, setRides] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshingRides, setRefreshingRides] = useState(false);
@@ -29,9 +35,15 @@ function DriverDashboard() {
         vehicleType: ""
     });
 
-    const email = localStorage.getItem("userEmail") || "";
-    const firstName = email.split("@")[0]?.split(/[._-]/)[0] || "Driver";
-    const driverName = profile?.name || firstName;
+    // Read email and name from Redux.
+    const email = userEmail || "";
+
+    const firstName =
+        userName?.trim().split(/\s+/)[0] ||
+        email.split("@")[0]?.split(/[._-]/)[0] ||
+        "Driver";
+
+    const driverName = profile?.name || userName || firstName;
 
     const loadProfile = useCallback(async () => {
         try {
@@ -110,7 +122,7 @@ function DriverDashboard() {
         loadProfile();
     }, [loadProfile]);
 
-    // Refresh assigned rides every 5 seconds
+    // Refresh assigned rides every 5 seconds.
     useEffect(() => {
         if (!cab) return undefined;
 
@@ -122,7 +134,7 @@ function DriverDashboard() {
         return () => window.clearInterval(interval);
     }, [cab, loadRides]);
 
-    // Automatically update driver GPS location every 10 seconds while online
+    // Automatically update driver GPS location every 10 seconds while online.
     useEffect(() => {
         if (!cab?.online) return undefined;
 
@@ -189,10 +201,10 @@ function DriverDashboard() {
             );
         };
 
-        // Send the first update immediately
+        // Send the first update immediately.
         updateDriverLocation();
 
-        // Continue updating every 10 seconds
+        // Continue updating every 10 seconds.
         const intervalId = window.setInterval(
             updateDriverLocation,
             10000
@@ -315,7 +327,7 @@ function DriverDashboard() {
         }
     };
 
-    // Share current location and go online
+    // Share current location and go online.
     const shareLocation = async () => {
         setUpdatingDuty(true);
         setError("");
@@ -384,7 +396,7 @@ function DriverDashboard() {
         }
     };
 
-    // Handles Accept, Start and Complete ride actions
+    // Handles Accept, Start and Complete ride actions.
     const updateRide = async (ride, action) => {
         setWorkingRide(ride.id);
         setError("");
@@ -424,6 +436,17 @@ function DriverDashboard() {
         (total, ride) => total + (Number(ride.fare) || 0),
         0
     );
+
+    const signOut = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("portal");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userName");
+
+        dispatch(clearAuth());
+
+        window.location.assign("/");
+    };
 
     return (
         <div className="driver-portal">
@@ -487,12 +510,7 @@ function DriverDashboard() {
                     <button
                         className="sidebar-signout"
                         type="button"
-                        onClick={() => {
-                            localStorage.removeItem("token");
-                            localStorage.removeItem("portal");
-                            localStorage.removeItem("userEmail");
-                            window.location.assign("/");
-                        }}
+                        onClick={signOut}
                     >
                         ↪ <span>Sign out</span>
                     </button>
