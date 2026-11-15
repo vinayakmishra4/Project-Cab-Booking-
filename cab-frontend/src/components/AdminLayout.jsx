@@ -80,7 +80,7 @@ function AdminLayout() {
                 <div className="admin-sidebar-bottom">
                     <div className="admin-user-avatar">{email.charAt(0).toUpperCase() || "A"}</div>
                     <div className="admin-user-info"><strong>Administrator</strong><span>{email}</span></div>
-                    <button className="admin-signout" type="button" onClick={signOut} aria-label="Sign out">↪</button>
+                    <button className="btn btn-link admin-signout" type="button" onClick={signOut} aria-label="Sign out">↪</button>
                 </div>
             </aside>
             <main className="admin-main">

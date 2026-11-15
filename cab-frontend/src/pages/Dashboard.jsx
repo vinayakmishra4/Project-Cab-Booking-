@@ -234,7 +234,7 @@ function Dashboard() {
                     </div>
 
                     <button
-                        className="employee-signout"
+                        className="btn btn-outline-primary employee-signout"
                         type="button"
                         onClick={signOut}
                     >
@@ -385,7 +385,7 @@ function Dashboard() {
                                 )}
 
                                 <button
-                                    className="employee-booking-submit"
+                                    className="btn btn-primary employee-booking-submit"
                                     type="submit"
                                 >
                                     Find available cabs
@@ -509,7 +509,7 @@ function Dashboard() {
                                 </p>
                             ) : recentRides.length ? (
                                 <div className="employee-bookings-table-wrap">
-                                    <table className="employee-bookings-table">
+                                    <table className="table employee-bookings-table">
                                         <thead>
                                             <tr>
                                                 <th>BOOKING</th>

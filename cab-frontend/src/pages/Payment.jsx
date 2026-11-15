@@ -57,6 +57,7 @@ function Payment(){
                     }}>
 
                         <button
+                            className="btn"
                             onClick={()=>setMethod("UPI")}
                             style={{
                                 flex:1,
@@ -71,6 +72,7 @@ function Payment(){
                         </button>
 
                         <button
+                            className="btn"
                             onClick={()=>setMethod("Cash")}
                             style={{
                                 flex:1,
@@ -113,6 +115,7 @@ function Payment(){
                     )}
 
                     <button
+                        className="btn btn-primary"
                         onClick={()=>navigate("/history")}
                         style={{
                             marginTop:"20px",

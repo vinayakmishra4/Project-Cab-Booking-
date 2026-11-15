@@ -41,15 +41,15 @@ function AdminFleet() {
 
     return (
         <div className="admin-data-page">
-            <AdminPageHeader title="Fleet" description="Vehicle availability, registration and assigned driver." actions={<button className="admin-refresh-button" type="button" disabled={loading} onClick={loadVehicles}>{loading ? "Loading…" : "↻ Refresh"}</button>} />
+            <AdminPageHeader title="Fleet" description="Vehicle availability, registration and assigned driver." actions={<button className="btn btn-outline-primary admin-refresh-button" type="button" disabled={loading} onClick={loadVehicles}>{loading ? "Loading…" : "↻ Refresh"}</button>} />
             <section className="admin-panel admin-list-panel">
                 <div className="admin-list-toolbar">
                     <p className="admin-result-count">{loading ? "Loading fleet…" : `${filteredVehicles.length} vehicles`}</p>
-                    <label className="admin-search"><span className="sr-only">Search fleet</span><input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search vehicle or driver…" /></label>
+                    <label className="admin-search"><span className="sr-only">Search fleet</span><input className="form-control" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search vehicle or driver…" /></label>
                 </div>
-                {error && <div className="admin-error-state" role="alert"><span>{error}</span><button type="button" onClick={loadVehicles}>Retry</button></div>}
+                {error && <div className="admin-error-state" role="alert"><span>{error}</span><button className="btn btn-primary" type="button" onClick={loadVehicles}>Retry</button></div>}
                 <div className="admin-table-scroll">
-                    <table className="admin-booking-table admin-full-table">
+                    <table className="table admin-booking-table admin-full-table">
                         <thead><tr><th>Vehicle</th><th>Registration</th><th>Type</th><th>Driver</th><th>Availability</th><th>Online</th></tr></thead>
                         <tbody>
                             {loading && <tr><td colSpan="6" className="admin-table-message">Loading vehicle records…</td></tr>}

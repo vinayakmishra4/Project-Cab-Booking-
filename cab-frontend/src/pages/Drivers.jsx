@@ -69,16 +69,16 @@ function Drivers() {
     return (
         <div className="admin-data-page">
             <AdminPageHeader title="Drivers" description="Driver directory and assigned vehicle status." actions={<>
-                <button className="admin-refresh-button" type="button" disabled={loading} onClick={loadDrivers}>{loading ? "Loading…" : "↻ Refresh"}</button>
+                <button className="btn btn-outline-primary admin-refresh-button" type="button" disabled={loading} onClick={loadDrivers}>{loading ? "Loading…" : "↻ Refresh"}</button>
             </>} />
             <section className="admin-panel admin-list-panel">
                 <div className="admin-list-toolbar">
                     <p className="admin-result-count">{loading ? "Loading drivers…" : `${filteredDrivers.length} drivers`}</p>
-                    <label className="admin-search"><span className="sr-only">Search drivers</span><input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search name, driver ID, email or vehicle…" /></label>
+                    <label className="admin-search"><span className="sr-only">Search drivers</span><input className="form-control" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search name, driver ID, email or vehicle…" /></label>
                 </div>
-                {error && <div className="admin-error-state" role="alert"><span>{error}</span><button type="button" onClick={loadDrivers}>Retry</button></div>}
+                {error && <div className="admin-error-state" role="alert"><span>{error}</span><button className="btn btn-primary" type="button" onClick={loadDrivers}>Retry</button></div>}
                 <div className="admin-table-scroll">
-                    <table className="admin-booking-table admin-full-table">
+                    <table className="table admin-booking-table admin-full-table">
                         <thead><tr><th>Driver</th><th>Driver ID</th><th>Email</th><th>Phone</th><th>Vehicle</th><th>Status</th><th>Actions</th></tr></thead>
                         <tbody>
                             {loading && <tr><td colSpan="7" className="admin-table-message">Loading driver records…</td></tr>}
@@ -88,7 +88,7 @@ function Drivers() {
                                 return <tr key={driver.id}>
                                     <td><strong>{driver.name || "—"}</strong></td><td>{driver.driverId || "—"}</td><td>{driver.email || "—"}</td><td>{driver.phone || "—"}</td>
                                     <td><strong>{driver.cab?.model || "No vehicle assigned"}</strong><small>{driver.cab?.carNumber || ""}</small></td><td>{status}</td>
-                                    <td><button className="admin-danger-button" type="button" onClick={() => { setDriverToDelete(driver); setDeleteError(""); }}>Delete</button></td>
+                                    <td><button className="btn btn-outline-danger admin-danger-button" type="button" onClick={() => { setDriverToDelete(driver); setDeleteError(""); }}>Delete</button></td>
                                 </tr>;
                             })}
                         </tbody>
@@ -106,8 +106,8 @@ function Drivers() {
                     <p><strong>{driverToDelete.name || driverToDelete.email}</strong>, assigned vehicle(s), and all linked booking and billing history will be permanently deleted. This cannot be undone.</p>
                     {deleteError && <p className="admin-error-text" role="alert">{deleteError}</p>}
                     <div className="admin-modal-actions">
-                        <button className="admin-secondary-button" type="button" disabled={deleting} onClick={() => setDriverToDelete(null)}>Cancel</button>
-                        <button className="admin-danger-button" type="button" disabled={deleting} onClick={deleteDriver}>{deleting ? "Deleting…" : "Delete driver and records"}</button>
+                        <button className="btn btn-outline-secondary admin-secondary-button" type="button" disabled={deleting} onClick={() => setDriverToDelete(null)}>Cancel</button>
+                        <button className="btn btn-danger admin-danger-button" type="button" disabled={deleting} onClick={deleteDriver}>{deleting ? "Deleting…" : "Delete driver and records"}</button>
                     </div>
                 </div>
             </AdminModal>}

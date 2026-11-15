@@ -301,6 +301,7 @@ function BookRide(){
                     )}
 
                     <button
+                        className="btn btn-primary"
                         onClick={calculateFare}
                         disabled={calculatingFare || booking}
                         style={{
@@ -318,7 +319,7 @@ function BookRide(){
                     {(locationError || bookingError) && (
                         <div className="bookride-error-group">
                             <p className="bookride-location-error" role="alert">{locationError || bookingError}</p>
-                            {authRequired && <button className="bookride-signin-button" type="button" onClick={signInToContinue}>Sign in to continue</button>}
+                            {authRequired && <button className="btn btn-outline-primary bookride-signin-button" type="button" onClick={signInToContinue}>Sign in to continue</button>}
                         </div>
                     )}
 
@@ -336,6 +337,7 @@ function BookRide(){
                             <p className="bookride-fare-note">{carType} fare is calculated at ₹{fareOptions.find((option) => option.vehicleType === carType)?.ratePerKm}/km; GST is added to the bill.</p>
 
                             <button
+                                className="btn btn-primary"
                                 onClick={confirmRide}
                                 disabled={booking || calculatingFare || authRequired}
                                 style={{

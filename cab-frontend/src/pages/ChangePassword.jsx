@@ -103,6 +103,7 @@ function ChangePassword() {
                         <>
                             <label className="login-label" htmlFor="reset-email">Account Email</label>
                             <input
+                                className="form-control"
                                 id="reset-email"
                                 type="email"
                                 autoComplete="username"
@@ -115,6 +116,7 @@ function ChangePassword() {
 
                     <label className="login-label" htmlFor="old-password">Old Password</label>
                     <input
+                        className="form-control"
                         id="old-password"
                         type="password"
                         autoComplete="current-password"
@@ -129,6 +131,7 @@ function ChangePassword() {
 
                     <label className="login-label" htmlFor="new-password">New Password</label>
                     <input
+                        className="form-control"
                         id="new-password"
                         type="password"
                         autoComplete="new-password"
@@ -141,6 +144,7 @@ function ChangePassword() {
 
                     <label className="login-label" htmlFor="confirm-new-password">Confirm New Password</label>
                     <input
+                        className="form-control"
                         id="confirm-new-password"
                         type="password"
                         autoComplete="new-password"
@@ -153,7 +157,7 @@ function ChangePassword() {
 
                     {error && <p className="login-error" role="alert">{error}</p>}
 
-                    <button className="login-submit" type="submit" disabled={loading}>
+                    <button className="btn btn-primary login-submit" type="submit" disabled={loading}>
                         {loading ? "Updating password…" : "Set Password"}
                     </button>
                     <Link className="reset-back-link" to="/" state={{ portal, email }}>

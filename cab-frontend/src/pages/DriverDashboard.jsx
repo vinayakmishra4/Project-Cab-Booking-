@@ -485,7 +485,7 @@ function DriverDashboard() {
                     <p>Drive safe. We’ve got your back.</p>
 
                     <button
-                        className="sidebar-signout"
+                        className="btn btn-outline-secondary sidebar-signout"
                         type="button"
                         onClick={() => {
                             localStorage.removeItem("token");
@@ -535,7 +535,7 @@ function DriverDashboard() {
                         </div>
 
                         <button
-                            className="refresh-button"
+                            className="btn btn-outline-primary refresh-button"
                             type="button"
                             onClick={loadDashboard}
                             disabled={loading || vehicleLoading}
@@ -584,6 +584,7 @@ function DriverDashboard() {
                                 <label>
                                     Car model
                                     <input
+                                        className="form-control"
                                         type="text"
                                         maxLength="100"
                                         placeholder="e.g. Maruti Suzuki Dzire"
@@ -601,6 +602,7 @@ function DriverDashboard() {
                                 <label>
                                     Registration number
                                     <input
+                                        className="form-control"
                                         type="text"
                                         maxLength="20"
                                         placeholder="e.g. MH 02 AB 1234"
@@ -618,6 +620,7 @@ function DriverDashboard() {
                                 <label>
                                     Car category
                                     <select
+                                        className="form-select"
                                         value={vehicleForm.vehicleType}
                                         onChange={(event) =>
                                             setVehicleForm((form) => ({
@@ -637,7 +640,7 @@ function DriverDashboard() {
                                     </select>
                                 </label>
 
-                                <button type="submit" disabled={savingVehicle}>
+                                <button className="btn btn-primary" type="submit" disabled={savingVehicle}>
                                     {savingVehicle
                                         ? "Registering car…"
                                         : "Register car →"}
@@ -688,7 +691,7 @@ function DriverDashboard() {
 
                             <div className="vehicle-duty-actions">
                                 <button
-                                    className={`vehicle-location-button ${
+                                    className={`btn btn-primary vehicle-location-button ${
                                         cab.online
                                             ? "vehicle-refresh-button"
                                             : "vehicle-on-duty-button"
@@ -706,7 +709,7 @@ function DriverDashboard() {
 
                                 {cab.online && (
                                     <button
-                                        className="vehicle-off-duty-button"
+                                        className="btn btn-outline-danger vehicle-off-duty-button"
                                         type="button"
                                         onClick={goOffDuty}
                                         disabled={updatingDuty}
@@ -838,6 +841,7 @@ function DriverDashboard() {
 
                                                     {ride.status === "REQUESTED" && (
                                                         <button
+                                                            className="btn btn-primary"
                                                             type="button"
                                                             disabled={workingRide === ride.id}
                                                             onClick={() =>
@@ -852,6 +856,7 @@ function DriverDashboard() {
 
                                                     {ride.status === "ACCEPTED" && (
                                                         <button
+                                                            className="btn btn-primary"
                                                             type="button"
                                                             disabled={workingRide === ride.id}
                                                             onClick={() =>
@@ -866,6 +871,7 @@ function DriverDashboard() {
 
                                                     {ride.status === "STARTED" && (
                                                         <button
+                                                            className="btn btn-primary"
                                                             type="button"
                                                             disabled={workingRide === ride.id}
                                                             onClick={() =>
@@ -935,7 +941,7 @@ function DriverDashboard() {
                             </div>
 
                             <button
-                                className="profile-close-button"
+                                className="btn btn-light profile-close-button"
                                 type="button"
                                 aria-label="Close account details"
                                 onClick={() => setProfileOpen(false)}
@@ -967,6 +973,7 @@ function DriverDashboard() {
                                 <label>
                                     Car model
                                     <input
+                                        className="form-control"
                                         type="text"
                                         maxLength="100"
                                         value={vehicleForm.model}
@@ -983,6 +990,7 @@ function DriverDashboard() {
                                 <label>
                                     Registration number
                                     <input
+                                        className="form-control"
                                         type="text"
                                         maxLength="20"
                                         value={vehicleForm.carNumber}
@@ -999,6 +1007,7 @@ function DriverDashboard() {
                                 <label>
                                     Car category
                                     <select
+                                        className="form-select"
                                         value={vehicleForm.vehicleType}
                                         onChange={(event) =>
                                             setVehicleForm((form) => ({
@@ -1020,7 +1029,7 @@ function DriverDashboard() {
 
                                 <div className="profile-modal-actions">
                                     <button
-                                        className="profile-secondary-button"
+                                        className="btn btn-outline-secondary profile-secondary-button"
                                         type="button"
                                         onClick={() => setEditingVehicle(false)}
                                         disabled={savingVehicle}
@@ -1029,7 +1038,7 @@ function DriverDashboard() {
                                     </button>
 
                                     <button
-                                        className="profile-primary-button"
+                                        className="btn btn-primary profile-primary-button"
                                         type="submit"
                                         disabled={savingVehicle}
                                     >
@@ -1047,6 +1056,7 @@ function DriverDashboard() {
                                 <label>
                                     Full name
                                     <input
+                                        className="form-control"
                                         type="text"
                                         maxLength="100"
                                         autoComplete="name"
@@ -1064,6 +1074,7 @@ function DriverDashboard() {
                                 <label>
                                     Phone number
                                     <input
+                                        className="form-control"
                                         type="tel"
                                         maxLength="20"
                                         autoComplete="tel"
@@ -1081,6 +1092,7 @@ function DriverDashboard() {
                                 <label>
                                     Driving licence number
                                     <input
+                                        className="form-control"
                                         type="text"
                                         maxLength="50"
                                         value={profileForm.licenseNumber}
@@ -1096,7 +1108,7 @@ function DriverDashboard() {
 
                                 <div className="profile-modal-actions">
                                     <button
-                                        className="profile-secondary-button"
+                                        className="btn btn-outline-secondary profile-secondary-button"
                                         type="button"
                                         onClick={() => setEditingProfile(false)}
                                         disabled={savingProfile}
@@ -1105,7 +1117,7 @@ function DriverDashboard() {
                                     </button>
 
                                     <button
-                                        className="profile-primary-button"
+                                        className="btn btn-primary profile-primary-button"
                                         type="submit"
                                         disabled={savingProfile}
                                     >
@@ -1177,7 +1189,7 @@ function DriverDashboard() {
 
                                 <div className="profile-modal-actions profile-modal-actions-split">
                                     <button
-                                        className="profile-secondary-button"
+                                        className="btn btn-outline-secondary profile-secondary-button"
                                         type="button"
                                         onClick={() => setEditingProfile(true)}
                                     >
@@ -1186,7 +1198,7 @@ function DriverDashboard() {
 
                                     {cab && (
                                         <button
-                                            className="profile-primary-button"
+                                            className="btn btn-primary profile-primary-button"
                                             type="button"
                                             onClick={() => {
                                                 setVehicleForm({

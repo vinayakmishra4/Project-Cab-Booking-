@@ -16,7 +16,7 @@ function AdminModal({ title, onClose, children, wide = false }) {
             <section className={`admin-modal${wide ? " wide" : ""}`} role="dialog" aria-modal="true" aria-label={title}>
                 <header className="admin-modal-header">
                     <h2>{title}</h2>
-                    <button type="button" className="admin-icon-button" onClick={onClose} aria-label="Close dialog">×</button>
+                    <button type="button" className="btn btn-light admin-icon-button" onClick={onClose} aria-label="Close dialog">×</button>
                 </header>
                 {children}
             </section>

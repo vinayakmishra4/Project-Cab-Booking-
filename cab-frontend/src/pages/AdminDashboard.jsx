@@ -109,12 +109,12 @@ function AdminDashboard() {
                     <h1>Transport overview <span className="admin-live-pill">LIVE</span></h1>
                     <p>A clear view of employee travel, drivers, and fleet activity.</p>
                 </div>
-                <button className="admin-refresh-button" type="button" onClick={loadDashboard} disabled={loading}>
+                <button className="btn btn-outline-primary admin-refresh-button" type="button" onClick={loadDashboard} disabled={loading}>
                     {loading ? "Refreshing…" : "↻ Refresh data"}
                 </button>
             </section>
 
-            {error && <div className="admin-error-state" role="alert"><span>{error}</span><button type="button" onClick={loadDashboard}>Retry</button></div>}
+            {error && <div className="admin-error-state" role="alert"><span>{error}</span><button className="btn btn-primary" type="button" onClick={loadDashboard}>Retry</button></div>}
 
             <section className="admin-stat-grid" aria-label="Transport statistics">
                 <article className="admin-stat-card"><span className="admin-stat-icon">▤</span><p>Total bookings</p><strong>{loading ? "—" : Number(dashboard.totalBookings || 0).toLocaleString("en-IN")}</strong><small>All employee and legacy-user rides</small></article>
@@ -178,7 +178,7 @@ function AdminDashboard() {
                         ))}
                     </div>
                     <div className="admin-table-scroll">
-                        <table className="admin-booking-table">
+                        <table className="table admin-booking-table">
                             <thead><tr><th>Booking / employee</th><th>Route</th><th>Driver / vehicle</th><th>Status</th><th>Fare</th></tr></thead>
                             <tbody>
                                 {loading && <tr><td colSpan="5" className="admin-table-message">Loading ride and account data…</td></tr>}

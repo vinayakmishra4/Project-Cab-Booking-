@@ -56,14 +56,14 @@ function PaymentModal({ amount, onSuccess }) {
                 </p>
 
                 <button
-                    className="pay-btn"
+                    className="btn btn-primary pay-btn"
                     onClick={onSuccess}
                 >
                     Payment Done
                 </button>
 
                 <button
-                    className="cancel-btn"
+                    className="btn btn-outline-secondary cancel-btn"
                     onClick={() => window.location.reload()}
                 >
                     Cancel

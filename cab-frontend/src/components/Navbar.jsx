@@ -27,7 +27,7 @@ function Navbar({ portal = localStorage.getItem("portal") || "EMPLOYEE" }){
                 {links.map((link) => (
                     <Link key={link.to} to={link.to}>{link.label}</Link>
                 ))}
-                <button className="navbar-signout" type="button" onClick={signOut}>Sign out</button>
+                <button className="btn btn-outline-primary navbar-signout" type="button" onClick={signOut}>Sign out</button>
             </div>
         </nav>
 

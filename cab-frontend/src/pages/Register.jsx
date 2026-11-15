@@ -128,6 +128,7 @@ function Register() {
                                 <label>
                                     Employee ID
                                     <input
+                                        className="form-control"
                                         name="employeeId"
                                         value={form.employeeId}
                                         onChange={updateField}
@@ -140,6 +141,7 @@ function Register() {
                             <label className="register-field-wide">
                                 {driver ? "Driver name" : "Full name"}
                                 <input
+                                    className="form-control"
                                     name="name"
                                     value={form.name}
                                     onChange={updateField}
@@ -151,6 +153,7 @@ function Register() {
                             <label className="register-field-wide">
                                 {driver ? "Email address" : "Company email"}
                                 <input
+                                    className="form-control"
                                     name="email"
                                     type="email"
                                     value={form.email}
@@ -163,6 +166,7 @@ function Register() {
                             <label className={driver ? "" : "register-field-wide"}>
                                 Phone number
                                 <input
+                                    className="form-control"
                                     name="phone"
                                     type="tel"
                                     value={form.phone}
@@ -178,6 +182,7 @@ function Register() {
                                 <label>
                                     Driving licence number
                                     <input
+                                        className="form-control"
                                         name="licenseNumber"
                                         value={form.licenseNumber}
                                         onChange={updateField}
@@ -190,6 +195,7 @@ function Register() {
                             <label>
                                 Password
                                 <input
+                                    className="form-control"
                                     name="password"
                                     type="password"
                                     value={form.password}
@@ -203,6 +209,7 @@ function Register() {
                             <label>
                                 Confirm password
                                 <input
+                                    className="form-control"
                                     name="confirmPassword"
                                     type="password"
                                     value={form.confirmPassword}
@@ -217,7 +224,7 @@ function Register() {
 
                         {error && <p className="register-error" role="alert">{error}</p>}
 
-                        <button className="register-submit" type="submit" disabled={loading}>
+                        <button className="btn btn-primary register-submit" type="submit" disabled={loading}>
                             {loading ? "Creating account…" : `Create ${driver ? "driver" : "employee"} account`}
                             {!loading && <span aria-hidden="true">→</span>}
                         </button>

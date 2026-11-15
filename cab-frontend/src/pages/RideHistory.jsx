@@ -111,7 +111,7 @@ function RideHistory() {
                     {!loading && error && (
                         <div className="ride-history-message ride-history-error" role="alert">
                             <p>{error}</p>
-                            <button type="button" onClick={loadRides}>Try again</button>
+                            <button className="btn btn-primary" type="button" onClick={loadRides}>Try again</button>
                         </div>
                     )}
 
@@ -179,7 +179,7 @@ function RideHistory() {
 
                                         <div className="ride-history-card-footer">
                                             <span>{driver?.phone ? `Driver contact: ${driver.phone}` : "Driver contact unavailable"}</span>
-                                            <button type="button" onClick={() => openRide(ride)}>
+                                            <button className="btn btn-outline-primary" type="button" onClick={() => openRide(ride)}>
                                                 View ride details <span aria-hidden="true">→</span>
                                             </button>
                                         </div>

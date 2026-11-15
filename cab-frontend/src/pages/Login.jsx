@@ -120,6 +120,7 @@ function Login() {
 
                     <label className="login-label" htmlFor="login-email">Work email</label>
                     <input
+                        className="form-control"
                         id="login-email"
                         type="email"
                         placeholder="you@company.com"
@@ -142,6 +143,7 @@ function Login() {
                         )}
                     </div>
                     <input
+                        className="form-control"
                         id="login-password"
                         type="password"
                         placeholder="Enter your password"
@@ -153,7 +155,7 @@ function Login() {
 
                     {error && <p className="login-error" role="alert">{error}</p>}
 
-                    <button className="login-submit" type="submit" disabled={loading}>
+                    <button className="btn btn-primary login-submit" type="submit" disabled={loading}>
                         {loading ? "Signing in..." : `Continue as ${portals.find((option) => option.id === portal)?.title}`}
                         {!loading && <span aria-hidden="true">→</span>}
                     </button>

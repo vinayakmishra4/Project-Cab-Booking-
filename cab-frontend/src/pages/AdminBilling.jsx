@@ -125,7 +125,7 @@ function AdminBilling() {
 
     return (
         <div className="admin-data-page">
-            <AdminPageHeader title="Billing" description="Completed bookings, fare and applicable extra charges." actions={<button className="admin-refresh-button" type="button" onClick={loadRides} disabled={loading}>{loading ? "Loading…" : "↻ Refresh"}</button>} />
+            <AdminPageHeader title="Billing" description="Completed bookings, fare and applicable extra charges." actions={<button className="btn btn-outline-primary admin-refresh-button" type="button" onClick={loadRides} disabled={loading}>{loading ? "Loading…" : "↻ Refresh"}</button>} />
             <div className="admin-summary-grid">
                 <article className="admin-panel admin-summary-card"><span>Total cost</span><strong>{loading ? "—" : formatCurrency(totalCost)}</strong><small>Fare plus charges for the selected period</small></article>
                 <article className="admin-panel admin-summary-card"><span>Trips billed</span><strong>{loading ? "—" : billRows.length.toLocaleString("en-IN")}</strong><small>Completed bookings in the selected period</small></article>
@@ -134,17 +134,17 @@ function AdminBilling() {
             <section className="admin-panel admin-list-panel">
                 <div className="admin-list-toolbar admin-billing-toolbar">
                     <div className="admin-date-filters">
-                        <label>From <input type="date" value={fromDate} max={toDate || undefined} onChange={(event) => { setFromDate(event.target.value); setPage(1); }} /></label>
-                        <label>To <input type="date" value={toDate} min={fromDate || undefined} onChange={(event) => { setToDate(event.target.value); setPage(1); }} /></label>
-                        {(fromDate || toDate) && <button className="admin-text-button" type="button" onClick={() => { setFromDate(""); setToDate(""); setPage(1); }}>All time</button>}
+                        <label>From <input className="form-control" type="date" value={fromDate} max={toDate || undefined} onChange={(event) => { setFromDate(event.target.value); setPage(1); }} /></label>
+                        <label>To <input className="form-control" type="date" value={toDate} min={fromDate || undefined} onChange={(event) => { setToDate(event.target.value); setPage(1); }} /></label>
+                        {(fromDate || toDate) && <button className="btn btn-link admin-text-button" type="button" onClick={() => { setFromDate(""); setToDate(""); setPage(1); }}>All time</button>}
                     </div>
-                    <button className="admin-secondary-button" type="button" onClick={exportBilling} disabled={!billRows.length}>↓ Export CSV</button>
+                    <button className="btn btn-outline-secondary admin-secondary-button" type="button" onClick={exportBilling} disabled={!billRows.length}>↓ Export CSV</button>
                 </div>
                 <p className="admin-session-note">Manual charges remain in this browser tab’s session only and are not saved to the backend. GST is included when present in the booking’s billing record.</p>
                 {chargeStorageError && <p className="admin-error-text" role="alert">{chargeStorageError}</p>}
-                {error && <div className="admin-error-state" role="alert"><span>{error}</span><button type="button" onClick={loadRides}>Retry</button></div>}
+                {error && <div className="admin-error-state" role="alert"><span>{error}</span><button className="btn btn-primary" type="button" onClick={loadRides}>Retry</button></div>}
                 <div className="admin-table-scroll">
-                    <table className="admin-booking-table admin-full-table admin-billing-table">
+                    <table className="table admin-booking-table admin-full-table admin-billing-table">
                         <thead><tr><th>Booking / date</th><th>Employee</th><th>Driver / vehicle</th><th>Route</th><th>Fare</th><th>Extra charges</th><th>Total</th><th></th></tr></thead>
                         <tbody>
                             {loading && <tr><td colSpan="8" className="admin-table-message">Loading billing records…</td></tr>}
@@ -157,7 +157,7 @@ function AdminBilling() {
                                 <td>{formatCurrency(ride.fare)}</td>
                                 <td>{ride.charges.length ? ride.charges.map((charge, index) => <small className="admin-charge-line" key={`${charge.description}-${index}`}>{charge.description}: {formatCurrency(charge.amount)}</small>) : "—"}</td>
                                 <td><strong>{formatCurrency(ride.total)}</strong></td>
-                                <td><button className="admin-secondary-button" type="button" disabled={ride.fare == null} title={ride.fare == null ? "A fare must be present to calculate a total" : undefined} onClick={() => { setSelectedRide(ride); setChargeError(""); }}>Add charge</button></td>
+                                <td><button className="btn btn-outline-secondary admin-secondary-button" type="button" disabled={ride.fare == null} title={ride.fare == null ? "A fare must be present to calculate a total" : undefined} onClick={() => { setSelectedRide(ride); setChargeError(""); }}>Add charge</button></td>
                             </tr>)}
                         </tbody>
                         {!loading && !error && billRows.length > 0 && <tfoot><tr><th colSpan="4">Totals</th><th>{formatCurrency(totalFare)}</th><th>{formatCurrency(totalExtraCharges)}</th><th>{formatCurrency(totalCost)}</th><th></th></tr></tfoot>}
@@ -168,10 +168,10 @@ function AdminBilling() {
             {selectedRide && <AdminModal title={`Add a charge to GC-${selectedRide.id}`} onClose={() => setSelectedRide(null)}>
                 <form className="admin-charge-form" onSubmit={addCharge}>
                     <p>Changes apply immediately to this billing table only. Use a negative amount for a discount.</p>
-                    <label>Description<input value={chargeDescription} onChange={(event) => setChargeDescription(event.target.value)} placeholder="Toll, waiting charge, discount…" required /></label>
-                    <label>Amount (₹)<input type="number" step="0.01" value={chargeAmount} onChange={(event) => setChargeAmount(event.target.value)} required /></label>
+                    <label>Description<input className="form-control" value={chargeDescription} onChange={(event) => setChargeDescription(event.target.value)} placeholder="Toll, waiting charge, discount…" required /></label>
+                    <label>Amount (₹)<input className="form-control" type="number" step="0.01" value={chargeAmount} onChange={(event) => setChargeAmount(event.target.value)} required /></label>
                     {chargeError && <p className="admin-error-text" role="alert">{chargeError}</p>}
-                    <div className="admin-modal-actions"><button type="button" className="admin-secondary-button" onClick={() => setSelectedRide(null)}>Cancel</button><button type="submit">Add charge</button></div>
+                    <div className="admin-modal-actions"><button type="button" className="btn btn-outline-secondary admin-secondary-button" onClick={() => setSelectedRide(null)}>Cancel</button><button className="btn btn-primary" type="submit">Add charge</button></div>
                 </form>
             </AdminModal>}
         </div>

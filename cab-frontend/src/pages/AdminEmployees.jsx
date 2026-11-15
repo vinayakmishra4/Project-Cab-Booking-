@@ -79,22 +79,22 @@ function AdminEmployees() {
 
     return (
         <div className="admin-data-page">
-            <AdminPageHeader title="Employees" description="Employee directory with booking totals derived from ride records." actions={<button className="admin-refresh-button" type="button" disabled={loading} onClick={loadData}>{loading ? "Loading…" : "↻ Refresh"}</button>} />
+            <AdminPageHeader title="Employees" description="Employee directory with booking totals derived from ride records." actions={<button className="btn btn-outline-primary admin-refresh-button" type="button" disabled={loading} onClick={loadData}>{loading ? "Loading…" : "↻ Refresh"}</button>} />
             <section className="admin-panel admin-list-panel">
                 <div className="admin-list-toolbar">
                     <p className="admin-result-count">{loading ? "Loading employees…" : `${employeeRows.length} employees`}</p>
-                    <label className="admin-search"><span className="sr-only">Search employees</span><input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search name, ID, email or phone…" /></label>
+                    <label className="admin-search"><span className="sr-only">Search employees</span><input className="form-control" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search name, ID, email or phone…" /></label>
                 </div>
-                {error && <div className="admin-error-state" role="alert"><span>{error}</span><button type="button" onClick={loadData}>Retry</button></div>}
+                {error && <div className="admin-error-state" role="alert"><span>{error}</span><button className="btn btn-primary" type="button" onClick={loadData}>Retry</button></div>}
                 <div className="admin-table-scroll">
-                    <table className="admin-booking-table admin-full-table">
+                    <table className="table admin-booking-table admin-full-table">
                         <thead><tr><th>Name</th><th>Employee ID</th><th>Email</th><th>Phone</th><th>Total bookings</th><th>Actions</th></tr></thead>
                         <tbody>
                             {loading && <tr><td colSpan="6" className="admin-table-message">Loading employee records…</td></tr>}
                             {!loading && !error && !employeeRows.length && <tr><td colSpan="6" className="admin-table-message">{employees.length ? "No employees match your search." : "No employees are registered yet."}</td></tr>}
                             {!loading && !error && visibleEmployees.map((employee) => <tr key={`${employee.source || "employee"}-${employee.id || employee.email}`}>
                                 <td><strong>{employee.name || "—"}</strong></td><td>{employee.employeeId || "—"}</td><td>{employee.email || "—"}</td><td>{employee.phone || "—"}</td><td>{employee.totalBookings.toLocaleString("en-IN")}</td>
-                                <td><button className="admin-danger-button" type="button" onClick={() => { setEmployeeToDelete(employee); setDeleteError(""); }}>Delete</button></td>
+                                <td><button className="btn btn-outline-danger admin-danger-button" type="button" onClick={() => { setEmployeeToDelete(employee); setDeleteError(""); }}>Delete</button></td>
                             </tr>)}
                         </tbody>
                     </table>
@@ -112,8 +112,8 @@ function AdminEmployees() {
                     <p><strong>{employeeToDelete.name || employeeToDelete.email}</strong> and all linked booking and billing history will be permanently deleted. This cannot be undone.</p>
                     {deleteError && <p className="admin-error-text" role="alert">{deleteError}</p>}
                     <div className="admin-modal-actions">
-                        <button className="admin-secondary-button" type="button" disabled={deleting} onClick={() => setEmployeeToDelete(null)}>Cancel</button>
-                        <button className="admin-danger-button" type="button" disabled={deleting} onClick={deleteEmployee}>{deleting ? "Deleting…" : "Delete employee and records"}</button>
+                        <button className="btn btn-outline-secondary admin-secondary-button" type="button" disabled={deleting} onClick={() => setEmployeeToDelete(null)}>Cancel</button>
+                        <button className="btn btn-danger admin-danger-button" type="button" disabled={deleting} onClick={deleteEmployee}>{deleting ? "Deleting…" : "Delete employee and records"}</button>
                     </div>
                 </div>
             </AdminModal>}

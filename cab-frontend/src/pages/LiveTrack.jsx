@@ -720,7 +720,7 @@ function LiveTrack() {
                                 {ride.status === "COMPLETED" && (
                                     <button
                                         type="button"
-                                        className="tracking-payment-button"
+                                        className="btn btn-primary tracking-payment-button"
                                         onClick={() =>
                                             navigate(
                                                 `/payment?fare=${encodeURIComponent(

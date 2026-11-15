@@ -50,14 +50,14 @@ function AdminLiveTrips() {
         <div className="admin-data-page">
             <AdminPageHeader title="Live trips" description="Accepted and started trips across all employees." actions={<>
                 <span className="admin-live-pill">LIVE · Refreshes every 30 seconds</span>
-                <button className="admin-refresh-button" type="button" onClick={() => refresh()} disabled={loading}>↻ Refresh</button>
+                <button className="btn btn-outline-primary admin-refresh-button" type="button" onClick={() => refresh()} disabled={loading}>↻ Refresh</button>
             </>} />
             {lastUpdated && <p className="admin-refresh-meta">Last updated {lastUpdated.toLocaleTimeString("en-IN")}</p>}
-            {error && <div className="admin-error-state" role="alert"><span>{error}</span><button type="button" onClick={() => refresh(true)}>Retry</button></div>}
+            {error && <div className="admin-error-state" role="alert"><span>{error}</span><button className="btn btn-primary" type="button" onClick={() => refresh(true)}>Retry</button></div>}
             <section className="admin-panel admin-list-panel">
                 <div className="admin-panel-heading admin-list-heading"><div><h2>Trips in progress</h2><p>{loading ? "Loading…" : `${liveTrips.length} live ${liveTrips.length === 1 ? "trip" : "trips"}`}</p></div><span className="admin-live-pill">LIVE</span></div>
                 <div className="admin-table-scroll">
-                    <table className="admin-booking-table admin-full-table">
+                    <table className="table admin-booking-table admin-full-table">
                         <thead><tr>
                             <th>Employee</th><th>Driver</th><th>Vehicle</th><th>Pickup → drop</th><th>Status</th>
                             {hasStartTime && <th>Start time</th>}

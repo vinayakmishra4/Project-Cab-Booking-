@@ -88,6 +88,7 @@ function LocationSearchField({
             <div className={inputClassName}>
                 {markerClassName && <span className={`location-dot ${markerClassName}`} aria-hidden="true"></span>}
                 <input
+                    className="form-control"
                     type="text"
                     disabled={disabled}
                     role="combobox"

@@ -64,7 +64,7 @@ function AdminBookings() {
     return (
         <div className="admin-data-page">
             <AdminPageHeader title="Bookings" description="Search and review every booking in the system." actions={
-                <button className="admin-refresh-button" type="button" onClick={loadRides} disabled={loading}>{loading ? "Loading…" : "↻ Refresh"}</button>
+                <button className="btn btn-outline-primary admin-refresh-button" type="button" onClick={loadRides} disabled={loading}>{loading ? "Loading…" : "↻ Refresh"}</button>
             } />
             <section className="admin-panel admin-list-panel">
                 <div className="admin-list-toolbar">
@@ -74,13 +74,13 @@ function AdminBookings() {
                         ))}
                     </div>
                     <div className="admin-list-controls">
-                        <label className="admin-search"><span className="sr-only">Search bookings</span><input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search bookings…" /></label>
-                        <button className="admin-secondary-button" type="button" onClick={exportRides} disabled={!filteredRides.length}>↓ Export</button>
+                        <label className="admin-search"><span className="sr-only">Search bookings</span><input className="form-control" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search bookings…" /></label>
+                        <button className="btn btn-outline-secondary admin-secondary-button" type="button" onClick={exportRides} disabled={!filteredRides.length}>↓ Export</button>
                     </div>
                 </div>
-                {error && <div className="admin-error-state" role="alert"><span>{error}</span><button type="button" onClick={loadRides}>Retry</button></div>}
+                {error && <div className="admin-error-state" role="alert"><span>{error}</span><button className="btn btn-primary" type="button" onClick={loadRides}>Retry</button></div>}
                 <div className="admin-table-scroll">
-                    <table className="admin-booking-table admin-full-table">
+                    <table className="table admin-booking-table admin-full-table">
                         <thead><tr><th>Booking</th><th>Employee</th><th>Pickup</th><th>Drop</th><th>Date / time</th><th>Driver / vehicle</th><th>Status</th><th>Fare</th><th>Distance</th></tr></thead>
                         <tbody>
                             {loading && <tr><td colSpan="9" className="admin-table-message">Loading all bookings…</td></tr>}
