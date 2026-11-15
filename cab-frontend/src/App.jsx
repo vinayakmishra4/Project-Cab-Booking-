@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 
+<<<<<<< HEAD
 import Login from "./pages/Login.jsx"
 import ChangePassword from "./pages/ChangePassword.jsx"
 import Register from "./pages/Register.jsx"
@@ -21,15 +22,42 @@ import DriverDashboard from "./pages/DriverDashboard.jsx"
 import PortalRoute from "./components/PortalRoute.jsx"
 import SiteFooter from "./components/SiteFooter.jsx"
 import IdleSessionManager from "./components/IdleSessionManager.js";
+=======
+import Login from "./pages/Login"
+import ChangePassword from "./pages/ChangePassword"
+import Register from "./pages/Register"
+import Dashboard from "./pages/Dashboard"
+import BookRide from "./pages/BookRide"
+import LiveTrack from "./pages/LiveTrack"
+import RideHistory from "./pages/RideHistory"
+
+import AdminDashboard from "./pages/AdminDashboard"
+import AdminLayout from "./components/AdminLayout"
+import AdminBookings from "./pages/AdminBookings"
+import AdminLiveTrips from "./pages/AdminLiveTrips"
+import AdminEmployees from "./pages/AdminEmployees"
+import AdminFleet from "./pages/AdminFleet"
+import AdminBilling from "./pages/AdminBilling"
+import Drivers from "./pages/Drivers"
+import Payment from "./pages/Payment"
+import DriverDashboard from "./pages/DriverDashboard"
+import PortalRoute from "./components/PortalRoute"
+import SiteFooter from "./components/SiteFooter"
+import IdleSessionManager from "./components/IdleSessionManager";
+>>>>>>> main
 
 function App(){
 
     return(
 
         <BrowserRouter>
+<<<<<<< HEAD
 
             <IdleSessionManager />
 
+=======
+            <IdleSessionManager />
+>>>>>>> main
             <Routes>
 
                 <Route path="/" element={<Login/>}/>

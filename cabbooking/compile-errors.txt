@@ -1,0 +1,22 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< com.murali:cabbooking >------------------------
+[INFO] Building cabbooking 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ cabbooking ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 7 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ cabbooking ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 48 source files with javac [debug parameters release 17] to target\classes
+[WARNING] /C:/Users/Vinayak.Mishra02/OneDrive - Motherson Group/Documents/GitHub/Project-Cab-Booking-/new/cabbooking/src/main/java/com/murali/cabbooking/entity/Admin.java:[32,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /C:/Users/Vinayak.Mishra02/OneDrive - Motherson Group/Documents/GitHub/Project-Cab-Booking-/new/cabbooking/src/main/java/com/murali/cabbooking/entity/User.java:[42,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.497 s
+[INFO] Finished at: 2026-11-15T06:31:22+05:30
+[INFO] ------------------------------------------------------------------------

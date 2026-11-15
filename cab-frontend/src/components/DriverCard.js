@@ -15,7 +15,7 @@ function DriverCard({ driver }) {
             border:"1px solid var(--border)",
             padding:"18px",
             marginTop:"15px",
-            borderRadius:"12px",
+            "border-Radius":"12px",
             color:"var(--text)",
             boxShadow:"var(--shadow)"
         }}>
